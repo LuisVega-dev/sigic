@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="text-center">Agregar Aprendiz</h1>
+    <form method="POST" class="container mt-4"> 
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej: Pepito Perez" required>
+        </div>
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo" required>
+        </div>
+        <div class="mb-3">
+            <label for="contraseña" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+{% endblock %}

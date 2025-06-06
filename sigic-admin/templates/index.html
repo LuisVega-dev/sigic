@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <div>
         <h1 class="text-center">Lista de Usuarios</h1>
         <a href="{{ url_for('add_user') }}" class="btn btn-dark mb-3">Agregar Aprendiz</a>
@@ -23,27 +33,11 @@
                         <a href="{{ url_for('edit_user', id=usuario['id']) }}" class="btn btn-primary btn-sm">Editar</a>
                         <form action="{{ url_for('delete_user', id=usuario['id']) }}" method="post" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                        <a href="{{ url_for('add_editor') }}" class="btn btn-warning btn-sm">Agregar Administrador</a>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    
-    {% if error %}
-        <div class="alert alert-warning mt-3" role="alert">
-            {{ error }}
-        </div>
-    {% endif %}
-
-    {% if success %}
-        <div class="alert alert-success mt-3" role="alert">
-            {{ success }}
-        </div>
-    {% endif %}
-
-    {% if message %}
-        <div class="alert alert-danger mt-3" role="alert">
-            {{ message }}
-        </div>
-    {% endif %}
 {% endblock %}

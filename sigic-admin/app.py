@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-CORS(app, origins=["http://localhost:3000", "http://192.168.1.1"])
+CORS(app, origins=["http://localhost:5173/", "http://192.168.10.1"])
 app.secret_key = 'secretkey'
 
 def get_db_connection():
@@ -50,7 +50,9 @@ def add_user():
             cur.close()
             conn.close()
             # Usar flash antes de redirigir
-            return redirect(url_for('index'), message="Usuario agregado correctamente", message_type="success")
+            flash("Usuario agregado correctamente", 'success')
+            # Redirigir a la página de inicio, que mostrará el mensaje flash
+            return redirect(url_for('index'))
         except Exception as e:
             flash(f"Error al agregar usuario: {e}", 'error')
             return redirect(url_for('index'))
@@ -97,6 +99,40 @@ def delete_user(id):
         flash(f"Error al eliminar usuario: {e}", 'error')
     return redirect(url_for('index'))
 
+#Ruta para agregar un editor
+@app.route('/add_editor', methods=['GET','POST'])
+def add_editor():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        correo = request.form['correo']
+        password = request.form['contraseña']
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            # Verificar si el correo ya está registrado en la tabla usuario
+            cur.execute("SELECT id FROM usuario WHERE correo = %s", (correo,))
+            # Verificar si el correo ya está registrado
+            id_usuario = cur.fetchone()
+            if id_usuario:
+                id_usuario = id_usuario['id']
+            else:
+                flash("El correo no está registrado", 'daneger')
+                return redirect(url_for('index'))
+            # Insertar el editor en la tabla editor
+            cur.execute("INSERT INTO editor (nombre, correo, contraseña, id_usuario) VALUES (%s, %s, %s, %s)", (nombre, correo, password, id_usuario))
+            conn.commit()
+            cur.close()
+            conn.close()
+            flash("Editor agregado correctamente", 'success')
+            return redirect(url_for('index'))
+        except Exception as e:
+            flash(f"Error al agregar editor: {e}", 'error')
+            return redirect(url_for('index'))
+    return render_template('agregar_editor.html')
+
+
+#RUTAS API
+
 # Ruta API para obtener los usuarios
 @app.route('/api/usuarios', methods=['GET'])    
 def api_usuarios():
@@ -110,7 +146,21 @@ def api_usuarios():
         return jsonify(usuarios)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+# Ruta Api para obtener los editores
+@app.route('/api/editors', methods=['GET'])
+def api_editors():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM editor")
+        editors = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(editors)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Ejecutamos la aplicación
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

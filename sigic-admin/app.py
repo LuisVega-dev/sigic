@@ -37,7 +37,6 @@ def index():
     except Exception as e:
         flash(f"Error al obtener datos: {e}")
         return render_template('index.html', usuarios=[], message=f"Error al obtener datos: {e}", message_type="error")
-    
 
 # Ruta para agregar un nuevo usuario
 @app.route('/add', methods=['GET','POST'])
@@ -123,6 +122,8 @@ def delete_user(id):
         flash(f"Error al eliminar usuario: {e}", 'error')
     return redirect(url_for('index'))
 
+#----------------------------Editores--------------------------------s
+
 #Ruta para agregar un editor
 @app.route('/add_editor', methods=['GET','POST'])
 def add_editor():
@@ -154,6 +155,64 @@ def add_editor():
             return redirect(url_for('index'))
     return render_template('agregar_editor.html')
 
+#Ruta para la pagina de inicio: Mostrar todos los editores
+@app.route('/editors')
+def editors():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM editor")
+        data = cur.fetchall()
+        cur.close()
+        conn.close()
+        return render_template('editors.html', editors=data)
+    except Exception as e:
+        flash(f"Error al obtener datos: {e}")
+        return render_template('editors.html', editors=[], message=f"Error al obtener datos: {e}", message_type="error")    
+    
+# Ruta para editar un editor existente
+@app.route('/edit_editor/<int:id>', methods=['GET','POST'])
+def edit_editor(id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        if request.method == 'POST':
+            nombre = request.form['nombre']
+            correo = request.form['correo']
+            password = request.form['contraseña']
+            cur.execute(
+                "UPDATE editor SET nombre=%s, correo=%s, contraseña=%s WHERE id=%s",
+                (nombre, correo, password, id)
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+            flash("Editor actualizado correctamente", 'success')
+            return redirect(url_for('editors'))
+        else:
+            cur.execute("SELECT * FROM editor WHERE id=%s", (id,))
+            editor = cur.fetchone()
+            cur.close()
+            conn.close()
+            return render_template('edit_editor.html', editor=editor)
+    except Exception as e:
+        flash(f"Error al editar editor: {e}", 'error')
+        return redirect(url_for('editors'))
+    
+# Ruta para eliminar un editor
+@app.route('/delete_editor/<int:id>', methods=['GET','POST'])
+def delete_editor(id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM editor WHERE id=%s", (id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        flash("Editor eliminado correctamente", 'success')
+    except Exception as e:
+        flash(f"Error al eliminar editor: {e}", 'error')
+    return redirect(url_for('editors'))
 
 #RUTAS API
 

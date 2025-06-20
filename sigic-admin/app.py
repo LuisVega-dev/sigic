@@ -1,16 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import pymysql
 from flask import jsonify
 from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
-CORS(app, origins=["http://localhost:5173/", "http://192.168.1.1"])
+CORS(app, origins=["http://localhost:5173/", "http://192.168.10.1"])
 app.secret_key = 'secretkey'
 UPLOAD_FOLDER = 'static/uploads_image'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Decorador para proteger las rutas que requieren inicio de sesión
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 def get_db_connection():
     return pymysql.connect(
@@ -22,6 +33,31 @@ def get_db_connection():
         database='sigic',
         cursorclass=pymysql.cursors.DictCursor,
     )
+
+# Login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        correo = request.form['correo']
+        password = request.form['contraseña']
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM editor WHERE correo=%s", (correo,))
+            admin = cur.fetchone()
+            cur.close()
+            conn.close()
+            if admin and check_password_hash(admin['contraseña'], password):
+                session['user_id'] = admin['id']  # Guarda el id del usuario en sesión
+                flash("Login exitoso", 'success')
+                return redirect(url_for('index'))
+            else:
+                flash("Credenciales incorrectas", 'danger')
+                return redirect(url_for('login'))
+        except Exception as e:
+            flash(f"Error al iniciar sesión: {e}", 'danger')
+            return redirect(url_for('login'))
+    return render_template('login.html')
 
 # Ruta para la pagina de inicio: Mostrar todos los usuarios
 @app.route('/')
@@ -45,7 +81,11 @@ def add_user():
         nombre = request.form['nombre']
         correo = request.form['correo']
         password = request.form['contraseña']
+        # Encriptar la contraseña antes de guardarla
+        hashed_password = generate_password_hash(password)
+        # Obtener la imagen del formulario
         imagen = request.files['imagen']
+        # Verificar si se subió una imagen
         imagen_filename = None
         if imagen and imagen.filename:
             imagen_filename = secure_filename(imagen.filename)
@@ -55,7 +95,7 @@ def add_user():
             cur = conn.cursor()
             cur.execute(
                 "INSERT INTO usuario (nombre, correo, contraseña, imagen) VALUES (%s, %s, %s, %s)",
-                (nombre, correo, password, imagen_filename)
+                (nombre, correo, hashed_password, imagen_filename)
             )
             conn.commit()
             cur.close()
@@ -77,6 +117,9 @@ def edit_user(id):
             nombre = request.form['nombre']
             correo = request.form['correo']
             password = request.form['contraseña']
+            # Encriptar la contraseña antes de guardarla
+            hashed_password = generate_password_hash(password)
+            # Obtener la imagen del formulario
             imagen = request.files.get('imagen')
             # Obtener el nombre de la imagen actual
             cur.execute("SELECT imagen FROM usuario WHERE id=%s", (id,))
@@ -90,7 +133,7 @@ def edit_user(id):
                 imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename))
             cur.execute(
                 "UPDATE usuario SET nombre=%s, correo=%s, contraseña=%s, imagen=%s WHERE id=%s",
-                (nombre, correo, password, imagen_filename, id)
+                (nombre, correo, hashed_password, imagen_filename, id)
             )
             conn.commit()
             cur.close()
@@ -122,7 +165,7 @@ def delete_user(id):
         flash(f"Error al eliminar usuario: {e}", 'error')
     return redirect(url_for('index'))
 
-#----------------------------Editores--------------------------------s
+#----------------------------Editores--------------------------------
 
 #Ruta para agregar un editor
 @app.route('/add_editor', methods=['GET','POST'])
@@ -131,6 +174,8 @@ def add_editor():
         nombre = request.form['nombre']
         correo = request.form['correo']
         password = request.form['contraseña']
+        # Encriptar la contraseña antes de guardarla
+        hashed_password = generate_password_hash(password)
         try:
             conn = get_db_connection()
             cur = conn.cursor()
@@ -144,7 +189,7 @@ def add_editor():
                 flash("El correo no está registrado", 'daneger')
                 return redirect(url_for('index'))
             # Insertar el editor en la tabla editor
-            cur.execute("INSERT INTO editor (nombre, correo, contraseña, id_usuario) VALUES (%s, %s, %s, %s)", (nombre, correo, password, id_usuario))
+            cur.execute("INSERT INTO editor (nombre, correo, contraseña, id_usuario) VALUES (%s, %s, %s, %s)", (nombre, correo, hashed_password, id_usuario))
             conn.commit()
             cur.close()
             conn.close()
@@ -180,9 +225,11 @@ def edit_editor(id):
             nombre = request.form['nombre']
             correo = request.form['correo']
             password = request.form['contraseña']
+            # Encriptar la contraseña antes de guardarla
+            hashed_password = generate_password_hash(password)
             cur.execute(
                 "UPDATE editor SET nombre=%s, correo=%s, contraseña=%s WHERE id=%s",
-                (nombre, correo, password, id)
+                (nombre, correo, hashed_password, id)
             )
             conn.commit()
             cur.close()
@@ -243,6 +290,13 @@ def api_editors():
         return jsonify(editors)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Ruta para cerrar sesión
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("Sesión cerrada", "success")
+    return redirect(url_for('login'))
 
 # Ejecutamos la aplicación
 if __name__ == '__main__':

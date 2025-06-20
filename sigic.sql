@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-06-2025 a las 08:58:33
+-- Tiempo de generación: 20-06-2025 a las 18:03:00
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `editor` (
-  `id_editor` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL,
   `correo` varchar(255) NOT NULL,
   `contraseña` varchar(255) NOT NULL,
@@ -39,9 +39,9 @@ CREATE TABLE `editor` (
 -- Volcado de datos para la tabla `editor`
 --
 
-INSERT INTO `editor` (`id_editor`, `nombre`, `correo`, `contraseña`, `id_usuario`) VALUES
-(2, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'Luis_2005', 7),
-(3, 'Andres Torres', 'andrestorres@gmail.com', 'ANDRESTORRES', 9);
+INSERT INTO `editor` (`id`, `nombre`, `correo`, `contraseña`, `id_usuario`) VALUES
+(2, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'scrypt:32768:8:1$jAf2HWNtGk5E58Qa$28fca099ecfc35dff579beaf8c484e531d320bf329032508d5eefb66305bbe13cac8f602cc5cd30872d9a8fd5ac0fe41224d193b59dad689d3eb1b1854e48bbc', 7),
+(3, 'Andres Torres', 'andrestorres@gmail.com', 'scrypt:32768:8:1$HQ4dDxaVcK42CxCq$629b82696be63a36e13978b1faf2b843d58f32840bf6648dcd63a38b9c613cfb33a9e16de50e238cddbf6031d00f3f6b22f64cabe41f540ecef90ce1b0f44ead', 9);
 
 -- --------------------------------------------------------
 
@@ -62,8 +62,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `nombre`, `correo`, `contraseña`, `imagen`) VALUES
-(7, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'Luis_2005', 'Imagen_de_WhatsApp_2025-06-10_a_las_01.13.37_2c108031.jpg'),
-(9, 'Andres Torres', 'andrestorres@gmail.com', 'andrestorres', NULL);
+(7, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'scrypt:32768:8:1$d9jvolArhWQQuiyz$0afb3a3ed435af6c79f921e45c87996c0aa69098776b56e503cd11ebafee4a6d7fcf0cbd37b6ea126968bdead33aaed404f4d00aeddd74186264091bf2cc1e97', 'Imagen_de_WhatsApp_2025-06-10_a_las_01.13.37_2c108031.jpg'),
+(9, 'Andres Torres', 'andrestorres@gmail.com', 'scrypt:32768:8:1$SqE6oHKDzMSo9TI6$7dfcf74785a8bc38fbaf4d934c31c57fede771ed1cdb1057e4180cb8da9308a926e60a37219a0a6a1e36aa67b51d34534430b58afc6ed6be295e3162801ea453', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -73,7 +73,7 @@ INSERT INTO `usuario` (`id`, `nombre`, `correo`, `contraseña`, `imagen`) VALUES
 -- Indices de la tabla `editor`
 --
 ALTER TABLE `editor`
-  ADD PRIMARY KEY (`id_editor`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `usuario_id_editor` (`id_usuario`);
 
 --
@@ -90,7 +90,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `editor`
 --
 ALTER TABLE `editor`
-  MODIFY `id_editor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`

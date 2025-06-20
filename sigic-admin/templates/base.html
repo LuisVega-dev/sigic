@@ -5,7 +5,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SIGIC ADMIN</title>
-
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
@@ -48,6 +47,9 @@
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{{ url_for('logout') }}" class="nav-link"><i class="bi bi-box-arrow-right"></i></a>
       </li>
     </ul>
 
@@ -211,16 +213,17 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          <li class="nav-item menu-open">
-            <a href="{{ url_for('index') }}" class="nav-link active">
+          <li class="nav-item menu-open siderbar-item">
+            <a href="{{ url_for('index') }}" class="nav-link active sidebar-link">
               <i class="nav-icon bi bi-person-fill-gear"></i>
               <p>
                 Opciones de Usario
               </p>
             </a>
+            
           </li>
           <li class="nav-item">
-            <a href="{{ url_for('editors') }}" class="nav-link">
+            <a href="{{ url_for('editors') }}" class="nav-link sidebar-link">
               <i class="nav-icon bi bi-person-lines-fill"></i>
               <p>
                 Lista de Administradores
@@ -333,6 +336,22 @@
 <script src="{{ url_for('static', filename='dist/js/adminlte.js') }}"></script>
 <script src="{{ url_for('static', filename='dist/js/demo.js') }}"></script>
 <script src="{{ url_for('static', filename='dist/js/pages/dashboard.js') }}"></script>
+<script>
+  // Mantener el enlace activo después de recargar la página
+  document.addEventListener('DOMContentLoaded', function() {
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const currentPath = window.location.pathname;
+
+    sidebarLinks.forEach(link => {
+      // Quita la clase activa de todos los enlaces
+      link.classList.remove('active');
+      // Si el href coincide con la ruta actual, agrega la clase activa
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
 {% block script %}
 
 {% endblock %}

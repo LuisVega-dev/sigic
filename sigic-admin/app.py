@@ -48,7 +48,9 @@ def login():
             cur.close()
             conn.close()
             if admin and check_password_hash(admin['contraseña'], password):
-                session['user_id'] = admin['id']  # Guarda el id del usuario en sesión
+                session['admin_id'] = admin['id']
+                session['admin_name'] = admin['nombre']
+                session['admin_image'] = admin.get('imagen')  # Guarda la imagen en sesión
                 flash("Login exitoso", 'success')
                 return redirect(url_for('index'))
             else:
@@ -297,6 +299,14 @@ def logout():
     session.clear()
     flash("Sesión cerrada", "success")
     return redirect(url_for('login'))
+
+# Context processor para inyectar variables en las plantillas
+@app.context_processor
+def inject_admin():
+    return {
+        'admin_name': session.get('admin_name'),
+        'admin_image': session.get('admin_image')
+    }
 
 # Ejecutamos la aplicación
 if __name__ == '__main__':

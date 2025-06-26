@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-06-2025 a las 18:03:00
+-- Tiempo de generación: 26-06-2025 a las 17:22:13
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,16 +32,17 @@ CREATE TABLE `editor` (
   `nombre` varchar(255) NOT NULL,
   `correo` varchar(255) NOT NULL,
   `contraseña` varchar(255) NOT NULL,
-  `id_usuario` int(11) NOT NULL
+  `id_usuario` int(11) NOT NULL,
+  `imagen` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `editor`
 --
 
-INSERT INTO `editor` (`id`, `nombre`, `correo`, `contraseña`, `id_usuario`) VALUES
-(2, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'scrypt:32768:8:1$jAf2HWNtGk5E58Qa$28fca099ecfc35dff579beaf8c484e531d320bf329032508d5eefb66305bbe13cac8f602cc5cd30872d9a8fd5ac0fe41224d193b59dad689d3eb1b1854e48bbc', 7),
-(3, 'Andres Torres', 'andrestorres@gmail.com', 'scrypt:32768:8:1$HQ4dDxaVcK42CxCq$629b82696be63a36e13978b1faf2b843d58f32840bf6648dcd63a38b9c613cfb33a9e16de50e238cddbf6031d00f3f6b22f64cabe41f540ecef90ce1b0f44ead', 9);
+INSERT INTO `editor` (`id`, `nombre`, `correo`, `contraseña`, `id_usuario`, `imagen`) VALUES
+(2, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'scrypt:32768:8:1$ifYGVCUqiVAREcU5$4a94845a95c8f5b11604d5f76e52032af469da747dc1f9ac9a13734def250422fac57e41251e0f4dfd84c1555f5300e8ed6d09e1c0653e538f1a3869e8fe4ee9', 7, 'Imagen_de_WhatsApp_2025-06-10_a_las_01.13.37_2c108031.jpg'),
+(3, 'Andres Torres', 'andrestorres@gmail.com', 'scrypt:32768:8:1$HQ4dDxaVcK42CxCq$629b82696be63a36e13978b1faf2b843d58f32840bf6648dcd63a38b9c613cfb33a9e16de50e238cddbf6031d00f3f6b22f64cabe41f540ecef90ce1b0f44ead', 9, '');
 
 -- --------------------------------------------------------
 

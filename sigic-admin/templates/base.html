@@ -189,10 +189,16 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="{{ url_for('static', filename='dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+          {% if admin_image %}
+          <img src="{{ url_for('static', filename='uploads_image/' ~ admin_image) }}" class="img-circle elevation-2" alt="User Image">
+          {% else %}
+          <img src="{{ url_for('static', filename='dist/img/user.png') }}" class="img-circle elevation-2" alt="User Image">
+          {% endif %}
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          {% if admin_name %}
+          <a href="#" class="d-block">{{ admin_name }}</a>
+          {% endif %}
         </div>
       </div>
 

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-06-2025 a las 17:22:13
+-- Tiempo de generación: 04-07-2025 a las 07:20:21
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -47,6 +47,20 @@ INSERT INTO `editor` (`id`, `nombre`, `correo`, `contraseña`, `id_usuario`, `im
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `permisos`
+--
+
+CREATE TABLE `permisos` (
+  `id` int(11) NOT NULL,
+  `id_editor` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `fecha_permiso` datetime NOT NULL,
+  `datos_permiso` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuario`
 --
 
@@ -78,6 +92,14 @@ ALTER TABLE `editor`
   ADD KEY `usuario_id_editor` (`id_usuario`);
 
 --
+-- Indices de la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `editor_id_editor_permisos` (`id_editor`),
+  ADD KEY `usuario_id_usuario_permisos` (`id_usuario`);
+
+--
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -94,6 +116,12 @@ ALTER TABLE `editor`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -108,6 +136,13 @@ ALTER TABLE `usuario`
 --
 ALTER TABLE `editor`
   ADD CONSTRAINT `usuario_id_editor` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  ADD CONSTRAINT `editor_id_editor_permisos` FOREIGN KEY (`id_editor`) REFERENCES `editor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_id_usuario_permisos` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

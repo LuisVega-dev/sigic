@@ -1,0 +1,97 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  background-image: url("/static/dist/img/bg-login.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+/* Formulario */
+
+.login-form {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.5px);
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 3rem 4rem;
+  border-radius: 0.7rem;
+  transition: all 0.3s ease;
+}
+
+.login-form h1 {
+  color: #000;
+  font-weight: 900;
+}
+
+.login-form:hover {
+  backdrop-filter: blur(15px);
+}
+
+.login-form .mb-3 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.login-form .mb-3 label {
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  color: #000;
+}
+
+.login-form .mb-3 input {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #000;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  transition: 0.5s ease;
+}
+
+.login-form .mb-3 input:focus {
+  box-shadow: 0px 4px 12px 0.25rem rgb(11 18 17 / 56%);
+}
+
+.btn-login {
+  background: none;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  transition: 0.3s ease;
+}
+
+.btn-login:hover {
+  background-color: rgba(255, 255, 255, 0.438);
+}
+
+.container-alert {
+  height: 58px;
+  margin-top: -68px;
+  margin-bottom: 10px;
+}
+
+.alert.flask-messages {
+  margin-bottom: 0;
+}

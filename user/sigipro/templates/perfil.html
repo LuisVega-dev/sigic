@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - SIGI{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if perfil.foto_perfil %}
+                        <img src="{{ perfil.foto_perfil }}" class="rounded-circle mb-3" alt="Foto de perfil" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-6x mb-3 text-primary"></i>
+                    {% endif %}
+                    <h3 class="card-title">{{ perfil.nombre_completo or perfil.usuario }}</h3>
+                    <p class="text-muted">{{ perfil.rol|title }}</p>
+                    <a href="{{ url_for('editar_perfil') }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Editar Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Información Personal</h4>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Usuario:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.usuario }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Email:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.email }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Teléfono:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.telefono or 'No especificado' }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Dirección:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.direccion or 'No especificada' }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Fecha de Nacimiento:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.fecha_nacimiento or 'No especificada' }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Fecha de Registro:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.fecha_registro.strftime('%d/%m/%Y') }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Último Acceso:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.ultimo_acceso.strftime('%d/%m/%Y %H:%M') if perfil.ultimo_acceso else 'Nunca' }}
+                        </div>
+                    </div>
+                    
+                    {% if perfil.biografia %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Biografía:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ perfil.biografia }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - SIGI{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Bienvenido A LA PAGINA (SIGI){{ session['usuario'] }}</h1>
+            <p class="lead">Sistema de Gestión Indígena - Panel de Control</p>
+
+
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Actividad Reciente
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for actividad in actividades[:5] %}
+                        <li class="list-group-item">
+                            <small class="text-muted">{{ actividad.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</small><br>
+                            {{ actividad.accion }}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-muted">No hay actividad reciente</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

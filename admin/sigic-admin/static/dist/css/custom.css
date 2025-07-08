@@ -1,0 +1,19 @@
+/* Title SIGIC */
+.container-title {
+  justify-content: end;
+}
+
+.container-title h1 {
+  text-align: end;
+  font-weight: 900;
+}
+
+/* Title Lista usuario */
+.title-user {
+  font-weight: 700;
+}
+
+/* table */
+.table td {
+  vertical-align: middle;
+}

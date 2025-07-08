@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="text-center">Agregar Aprendiz</h1>
+    <form method="POST" enctype="multipart/form-data" class="container mt-4"> 
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej: Pepito Perez" required>
+        </div>
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo" required>
+        </div>
+        <div class="mb-3">
+            <label for="contraseña" class="form-label">Contraseña</label>
+            <div class="input-group">
+                <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+                <span class="input-group-text"><i class="bi bi-eye-fill" id="icon-chan" onclick="togglePassword()"></i></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen</label>
+            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+    {% block script %}
+        <script>
+        function togglePassword() {
+            const pwd = document.getElementById('contraseña');
+            const icon = document.querySelector('#icon-chan');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            }
+        }
+        </script>
+    {% endblock %}
+{% endblock %}

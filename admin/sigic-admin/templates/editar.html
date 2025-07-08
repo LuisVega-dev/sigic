@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1 class="text-center">Editar Aprendiz</h1>
+
+    <form method="POST" class="container mt-4" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario['nombre'] }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo" value="{{ usuario['correo'] }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="contraseña" class="form-label">Contraseña</label>
+            <div class="input-group">
+                <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="Dejar vacio para no cambiar">
+                <span class="input-group-text"><i class="bi bi-eye-fill" id="icon-chan" onclick="togglePassword()"></i></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen</label>
+            <input type="file" class="form-control" id="imagen" name="imagen">
+            {% if usuario['imagen'] %}
+                <img src="{{ url_for('static', filename='uploads_image/' ~ usuario['imagen']) }}" width="200px" alt="Imagen de Usuario" class="mt-2">
+            {% else %}
+                <p class="text-muted">Sin imagen</p>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+
+    {% block script %}
+        <script>
+        function togglePassword() {
+            const pwd = document.getElementById('contraseña');
+            const icon = document.querySelector('#icon-chan');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            }
+        }
+        </script>
+    {% endblock %}
+
+{% endblock %}

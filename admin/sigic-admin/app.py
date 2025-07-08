@@ -221,6 +221,12 @@ def add_user():
         # Manejar la subida de imagen de perfil
         imagen_filename = None
         
+        if imagen and imagen.filename:
+            # Generar un nombre de archivo seguro
+            imagen_filename = secure_filename(imagen.filename)
+            # Guardar la imagen en la carpeta de uploads
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename))
+
         # Verificar si se subió una imagen válida
         if imagen and imagen.filename:
             # Generar un nombre de archivo seguro
@@ -593,4 +599,4 @@ def inject_admin():
 
 # Ejecutar la aplicación Flask
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

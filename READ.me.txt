@@ -1,0 +1,7 @@
+Se necesitan las siguiente extensiones
+
+FLASK: para instalarlo, ve a la terminal de Windows y pega el siguiente comando "pip install Flask" sin comillas.
+Flask_cors: Es el mis procedimiento para instalar flask, solo que vas a poner el siguiente comando "pip install flask-cors" sin comillas.
+pymysql: Es el mismo procedimiento que el anterior solo cambiamos el comando a "pip install pymysql" sin comillas.
+flask_wtf: El mismo proceso pero con el comando "pip install -U Flask-WTF" sin comillas.
+Email_validator: El mismo proceso pero con el comnado "pip install email-validator" sin comillas.

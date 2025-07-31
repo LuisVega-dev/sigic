@@ -1,5 +1,5 @@
 # ============================================================================
-# SISTEMA DE INFORMACIÓN GEOGRÁFICA INTERCULTURAL (SIGI)
+# SISTEMA DE INFORMACIÓN GEOGRÁFICA INTERCULTURAL (SIGIC)
 # Aplicación Flask para gestión de comunidades indígenas
 # ============================================================================
 

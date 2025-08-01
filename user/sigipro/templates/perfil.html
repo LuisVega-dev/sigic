@@ -8,13 +8,13 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body text-center">
-                    {% if perfil.foto_perfil %}
-                        <img src="{{ perfil.foto_perfil }}" class="rounded-circle mb-3" alt="Foto de perfil" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% if usuario.imagen %}
+                        <img src="{{ url_for('static', filename='uploads/' + usuario.imagen) }}" class="rounded-circle mb-3" alt="Foto de perfil" style="width: 150px; height: 150px; object-fit: cover;">
                     {% else %}
                         <i class="fas fa-user-circle fa-6x mb-3 text-primary"></i>
                     {% endif %}
-                    <h3 class="card-title">{{ perfil.nombre_completo or perfil.usuario }}</h3>
-                    <p class="text-muted">{{ perfil.rol|title }}</p>
+                    <h3 class="card-title">{{ usuario.nombre }}</h3>
+                    <p class="text-muted">Miembro de la comunidad</p>
                     <a href="{{ url_for('editar_perfil') }}" class="btn btn-primary">
                         <i class="fas fa-edit me-2"></i>Editar Perfil
                     </a>
@@ -29,77 +29,61 @@
                     
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Usuario:</strong>
+                            <strong>Nombre:</strong>
                         </div>
                         <div class="col-md-8">
-                            {{ perfil.usuario }}
+                            {{ usuario.nombre }}
                         </div>
                     </div>
                     
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Email:</strong>
+                            <strong>Correo electrónico:</strong>
                         </div>
                         <div class="col-md-8">
-                            {{ perfil.email }}
+                            {{ usuario.correo }}
                         </div>
                     </div>
                     
+                    {% if usuario.telefono %}
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <strong>Teléfono:</strong>
                         </div>
                         <div class="col-md-8">
-                            {{ perfil.telefono or 'No especificado' }}
+                            {{ usuario.telefono }}
                         </div>
                     </div>
+                    {% endif %}
                     
+                    {% if usuario.direccion %}
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <strong>Dirección:</strong>
                         </div>
                         <div class="col-md-8">
-                            {{ perfil.direccion or 'No especificada' }}
+                            {{ usuario.direccion }}
                         </div>
                     </div>
+                    {% endif %}
                     
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <strong>Fecha de Nacimiento:</strong>
-                        </div>
-                        <div class="col-md-8">
-                            {{ perfil.fecha_nacimiento or 'No especificada' }}
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <strong>Fecha de Registro:</strong>
-                        </div>
-                        <div class="col-md-8">
-                            {{ perfil.fecha_registro.strftime('%d/%m/%Y') }}
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <strong>Último Acceso:</strong>
-                        </div>
-                        <div class="col-md-8">
-                            {{ perfil.ultimo_acceso.strftime('%d/%m/%Y %H:%M') if perfil.ultimo_acceso else 'Nunca' }}
-                        </div>
-                    </div>
-                    
-                    {% if perfil.biografia %}
+                    {% if usuario.biografia %}
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <strong>Biografía:</strong>
                         </div>
                         <div class="col-md-8">
-                            {{ perfil.biografia }}
+                            {{ usuario.biografia }}
                         </div>
                     </div>
                     {% endif %}
+                    
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Si necesitas actualizar tu información, haz clic en "Editar Perfil".
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>

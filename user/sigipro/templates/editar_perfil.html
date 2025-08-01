@@ -68,16 +68,16 @@
                         <div class="form-group mb-3">
                             {{ form.foto_perfil.label(class="form-label") }}
                             {{ form.foto_perfil(class="form-control") }}
-                            {% if usuario and usuario.get('foto_perfil') %}
+                            {% if usuario and usuario.get('imagen') %}
                                 <div class="mt-2">
-                                    <img src="{{ url_for('static', filename='uploads/' + usuario.foto_perfil) }}" 
+                                    <img src="{{ url_for('static', filename='uploads/' + usuario.imagen) }}" 
                                          alt="Foto de perfil" class="img-thumbnail" style="max-width: 200px;">
                                 </div>
                             {% endif %}
                         </div>
                         
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ url_for('ver_perfil') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+                            <a href="{{ url_for('perfil') }}" class="btn btn-secondary me-md-2">Cancelar</a>
                             {{ form.submit(class="btn btn-primary") }}
                         </div>
                     </form>

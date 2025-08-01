@@ -37,17 +37,13 @@
                                     class="fas fa-id-card me-2"></i>Nuestra identidad</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('equipo') }}"><i
                                     class="fas fa-users me-2"></i>Nuestro equipo</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('territorio') }}"><i
-                                    class="fas fa-map-marked-alt me-2"></i>Nuestro territorio</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('comunidad') }}"><i
+                                    class="fas fa-map-marked-alt me-2"></i>comunidad</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('cosmovision') }}"><i
-                                    class="fas fa-globe-americas me-2"></i>Nuestra Cosmovisión</a></li>
+                                    class="fas fa-globe-americas me-2"></i>Nuestro propósito</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="{{ url_for('objetivos') }}"><i
-                                    class="fas fa-bullseye me-2"></i>Nuestros objetivos</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('mision') }}"><i
-                                    class="far fa-star me-2"></i>Nuestra misión</a></li>
                     </ul>
                 </li>
 
@@ -62,9 +58,7 @@
                                     class="fas fa-question-circle me-2"></i>¿Qué es la línea negra?</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('mision_espiritual') }}"><i
                                     class="fas fa-map-pin me-2"></i>lugares sagrados de la línea negra</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('territorio') }}"><i
-                                    class="fas fa-exclamation-triangle me-2"></i>Importancia espiritual y amenazas</a>
-                        </li>
+
                         <li><a class="dropdown-item" href="{{ url_for('cosmovision') }}"><i
                                     class="fas fa-draw-polygon me-2"></i>Ilustración de la línea negra</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('mision') }}"><i
@@ -80,15 +74,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="educationDropdown">
                         <li><a class="dropdown-item" href="{{ url_for('modulo') }}"><i
-                                    class="fas fa-book me-2"></i>CUENTO ORALES</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-chalkboard-teacher me-2"></i>VIDEO
-                                EDUCATIVO</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-alt me-2"></i>ACTIVIDAD</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-certificate me-2"></i>Certificados</a>
-                        </li>
+                                    class="fas fa-book me-2"></i>aprendizaje</a></li>
                     </ul>
                 </li>
 
@@ -149,8 +135,7 @@
                         <span class="d-none d-lg-inline">{{ session['usuario'] }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user-circle me-2"></i>Mi
-                                Perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('perfil') }}"><i class="fas fa-user-circle me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i>Guardados</a></li>
                         <li>

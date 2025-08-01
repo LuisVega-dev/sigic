@@ -10,7 +10,7 @@ from functools import wraps  # Para crear decoradores personalizados
 from datetime import datetime, timedelta  # Para manejo de fechas y tiempo
 from werkzeug.utils import secure_filename  # Para nombres de archivo seguros
 from flask_wtf import FlaskForm  # Para formularios seguros con CSRF protection
-from wtforms import StringField, FileField, SubmitField, PasswordField, EmailField  # Campos de formulario
+from wtforms import StringField, FileField, SubmitField, PasswordField, EmailField, TextAreaField  # Campos de formulario
 from wtforms.validators import DataRequired, Email, EqualTo  # Validadores de formulario
 import os  # Para operaciones del sistema operativo
 import pymysql  # Driver para conexión directa con MySQL
@@ -27,6 +27,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # FORMULARIOS CON FLASK-WTF
 # ============================================================================
 
+# Definición del formulario de registro usando FlaskForm
 class RegistroForm(FlaskForm):
     """
     Formulario para registro de nuevos usuarios con validación y protección CSRF.
@@ -43,6 +44,16 @@ class RegistroForm(FlaskForm):
     ])
     imagen = FileField('Imagen de perfil (opcional)')
     submit = SubmitField('Registrarse')
+
+# Clase para el formulario de perfil
+class PerfilForm(FlaskForm):
+    nombre_completo = StringField('Nombre Completo', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    telefono = StringField('Teléfono')
+    direccion = StringField('Dirección')
+    biografia = TextAreaField('Biografía')
+    foto_perfil = FileField('Foto de Perfil')
+    submit = SubmitField('Guardar Cambios')
 
 # ============================================================================
 # CONFIGURACIÓN DE BASE DE DATOS
@@ -470,6 +481,12 @@ def equipo():
     """Página con información del equipo de trabajo."""
     return render_template('equipo.html')
 
+@app.route('/comunidad')
+@login_required
+def comunidad():
+    """Página con información sobre la comunidad."""
+    return render_template('comunidad.html')
+
 @app.route('/territorio')
 @login_required
 def territorio():
@@ -611,24 +628,117 @@ def perfil():
     Muestra el perfil del usuario autenticado.
     
     Returns:
-        Template: Renderiza perfil.html
-        
-    Note: Debería cargar datos del usuario desde la BD usando session['user_id']
+        Template: Renderiza perfil.html con datos del usuario
     """
-    return render_template('perfil.html')
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM usuario WHERE id = %s", (session['user_id'],))
+        usuario = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if not usuario:
+            flash('Usuario no encontrado', 'danger')
+            return redirect(url_for('inicio_privado'))
+            
+        return render_template('perfil.html', usuario=usuario)
+        
+    except Exception as e:
+        flash(f'Error al cargar perfil: {e}', 'danger')
+        return redirect(url_for('inicio_privado'))
 
-@app.route('/editar-perfil')
+@app.route('/perfil/editar', methods=['GET', 'POST'])
 @login_required
 def editar_perfil():
     """
     Formulario para editar el perfil del usuario.
     
+    GET: Muestra el formulario con los datos actuales del usuario
+    POST: Procesa los cambios y actualiza el perfil en la BD
+    
     Returns:
-        Template: Renderiza editar_perfil.html
-        
-    Note: Debería soportar POST para guardar cambios en la BD
+        GET: Renderiza editar_perfil.html con formulario pre-rellenado
+        POST: Redirect a perfil si es exitoso, o recarga el formulario con errores
     """
-    return render_template('editar_perfil.html')
+    form = PerfilForm()
+    
+    # Obtener datos actuales del usuario
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM usuario WHERE id = %s", (session['user_id'],))
+        usuario = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if not usuario:
+            flash('Usuario no encontrado', 'danger')
+            return redirect(url_for('perfil'))
+            
+    except Exception as e:
+        flash(f'Error al cargar datos del usuario: {e}', 'danger')
+        return redirect(url_for('perfil'))
+    
+    if form.validate_on_submit():
+        # Procesar la actualización del perfil
+        nombre_completo = form.nombre_completo.data
+        email = form.email.data
+        telefono = form.telefono.data
+        direccion = form.direccion.data
+        biografia = form.biografia.data
+        foto_perfil = form.foto_perfil.data
+        
+        # Verificar que el email no esté siendo usado por otro usuario
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM usuario WHERE correo = %s AND id != %s", (email, session['user_id']))
+            email_existente = cur.fetchone()
+            
+            if email_existente:
+                flash('El correo ingresado ya está siendo usado por otro usuario', 'danger')
+                cur.close()
+                conn.close()
+                return render_template('editar_perfil.html', form=form, usuario=usuario)
+            
+            # Manejar la subida de nueva foto de perfil
+            foto_filename = usuario.get('imagen')  # Mantener la foto actual por defecto
+            if foto_perfil and foto_perfil.filename:
+                foto_filename = secure_filename(foto_perfil.filename)
+                foto_perfil.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
+            
+            # Actualizar los datos en la base de datos
+            cur.execute("""
+                UPDATE usuario 
+                SET nombre = %s, correo = %s, telefono = %s, direccion = %s, biografia = %s, imagen = %s
+                WHERE id = %s
+            """, (nombre_completo, email, telefono, direccion, biografia, foto_filename, session['user_id']))
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            # Actualizar la sesión con el nuevo nombre
+            session['user_name'] = nombre_completo
+            session['usuario'] = nombre_completo
+            
+            flash('Perfil actualizado exitosamente', 'success')
+            return redirect(url_for('perfil'))
+            
+        except Exception as e:
+            flash(f'Error al actualizar perfil: {e}', 'danger')
+            return render_template('editar_perfil.html', form=form, usuario=usuario)
+    
+    # Si es GET, pre-rellenar el formulario con los datos actuales
+    if request.method == 'GET':
+        form.nombre_completo.data = usuario.get('nombre', '')
+        form.email.data = usuario.get('correo', '')
+        form.telefono.data = usuario.get('telefono', '')
+        form.direccion.data = usuario.get('direccion', '')
+        form.biografia.data = usuario.get('biografia', '')
+    
+    return render_template('editar_perfil.html', form=form, usuario=usuario)
 
 # ============================================================================
 # RUTAS DE ADMINISTRACIÓN DE CONTENIDO (REQUIEREN AUTENTICACIÓN)

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ noticia.titulo }} - SIGI{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                {% if noticia.imagen %}
+                <img src="{{ noticia.imagen }}" class="card-img-top" alt="{{ noticia.titulo }}" style="height: 400px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title">{{ noticia.titulo }}</h2>
+                    <p class="text-muted">
+                        <span class="badge bg-secondary">{{ noticia.categoria|title }}</span>
+                        <small class="ms-2">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ noticia.fecha_publicacion.strftime('%d/%m/%Y') }}
+                        </small>
+                        <small class="ms-2">
+                            <i class="fas fa-user me-1"></i>
+                            {{ noticia.autor.nombre_completo }}
+                        </small>
+                    </p>
+                    <div class="card-text">
+                        {{ noticia.contenido|safe }}
+                    </div>
+                </div>
+            </div>
+
+            {% if noticia.galeria %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Galería de Imágenes</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for imagen in noticia.galeria %}
+                        <div class="col-md-4">
+                            <img src="{{ imagen }}" class="img-thumbnail" alt="Imagen de la noticia" style="height: 200px; object-fit: cover;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if noticia.archivos_adjuntos %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Archivos Adjuntos</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for archivo in noticia.archivos_adjuntos %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file me-2"></i>
+                                {{ archivo.nombre }}
+                            </div>
+                            <a href="{{ archivo.url }}" class="btn btn-outline-primary btn-sm" download>
+                                <i class="fas fa-download me-1"></i>Descargar
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Noticias Relacionadas</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for relacionada in noticias_relacionadas %}
+                        <li class="list-group-item">
+                            <a href="{{ url_for('ver_noticia', id=relacionada.id) }}" class="text-decoration-none">
+                                <h6 class="mb-1">{{ relacionada.titulo }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ relacionada.fecha_publicacion.strftime('%d/%m/%Y') }}
+                                </small>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated and current_user.rol == 'admin' %}
+            <div class="card">
+                <div class="card-body">
+                    <a href="{{ url_for('editar_noticia', id=noticia.id) }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-edit me-2"></i>Editar Noticia
+                    </a>
+                    <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#eliminarNoticiaModal">
+                        <i class="fas fa-trash me-2"></i>Eliminar Noticia
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.rol == 'admin' %}
+<!-- Modal para eliminar noticia -->
+<div class="modal fade" id="eliminarNoticiaModal" tabindex="-1" aria-labelledby="eliminarNoticiaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminarNoticiaModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar la noticia "{{ noticia.titulo }}"? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{{ url_for('eliminar_noticia', id=noticia.id) }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

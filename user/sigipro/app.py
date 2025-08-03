@@ -188,7 +188,71 @@ def iniciar_sesion():
             return redirect(url_for('iniciar_sesion'))
     
     # Si es una petición GET, mostrar el formulario de login
-    return render_template('login.html')
+    return render_template('auth/login.html')
+
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    """
+    Maneja el registro de nuevos usuarios usando FlaskForm.
+    
+    GET: Muestra el formulario de registro
+    POST: Procesa el formulario y crea el usuario
+    
+    Returns:
+        GET: Renderiza registro.html con el formulario
+        POST: Redirige a login si es exitoso, o recarga el formulario con errores
+    """
+    form = RegistroForm()
+    
+    if form.validate_on_submit():
+        # Obtener datos del formulario validado
+        nombre = form.nombre.data
+        correo = form.correo.data
+        contraseña = form.contraseña.data
+        imagen = form.imagen.data  # Archivo de imagen (opcional)
+        
+        # Verificar que el usuario no exista
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM usuario WHERE correo = %s", (correo,))
+            usuario_existente = cur.fetchone()
+            
+            if usuario_existente:
+                flash('El correo ingresado ya se encuentra en uso', 'danger')
+                cur.close()
+                conn.close()
+                return render_template('auth/registro.html', form=form)
+            
+            # Manejar la subida de imagen de perfil
+            imagen_filename = None
+            if imagen and imagen.filename:
+                # Generar un nombre de archivo seguro
+                imagen_filename = secure_filename(imagen.filename)
+                # Guardar la imagen en la carpeta de uploads
+                imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename))
+            
+            # Encriptar la contraseña antes de guardarla
+            hashed_password = generate_password_hash(contraseña)
+            
+            # Insertar el nuevo usuario en la tabla 'usuario'
+            cur.execute("INSERT INTO usuario (nombre, correo, contraseña, imagen) VALUES (%s, %s, %s, %s)",
+                        (nombre, correo, hashed_password, imagen_filename))
+            conn.commit()  # Guardar cambios
+            
+            # Cerrar conexión
+            cur.close()
+            conn.close()
+            
+            flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
+            return redirect(url_for('iniciar_sesion'))
+        
+        except Exception as e:
+            flash(f'Error al registrar usuario: {e}', 'danger')
+            return render_template('auth/registro.html', form=form)
+    
+    # Si es GET o el formulario no es válido, mostrar el formulario
+    return render_template('auth/registro.html', form=form)
 
 # Ruta para cerrar sesión del usuario
 @app.route('/cerrar-sesion')
@@ -211,7 +275,7 @@ def cerrar_sesion():
     flash('Has cerrado sesión correctamente', 'info')
     
     # Redirigir a la página de login
-    return redirect(url_for('iniciar_sesion'))
+    return redirect(url_for('auth/login.html'))
 
 # ============================================================================
 # RUTAS PRINCIPALES DE NAVEGACIÓN
@@ -315,72 +379,8 @@ def inicio():
                          testimonios=testimonios)
 
 # ============================================================================
-# RUTAS DE REGISTRO Y CONTACTO
+# RUTAS DE CONTACTO
 # ============================================================================
-
-@app.route('/registro', methods=['GET', 'POST'])
-def registro():
-    """
-    Maneja el registro de nuevos usuarios usando FlaskForm.
-    
-    GET: Muestra el formulario de registro
-    POST: Procesa el formulario y crea el usuario
-    
-    Returns:
-        GET: Renderiza registro.html con el formulario
-        POST: Redirige a login si es exitoso, o recarga el formulario con errores
-    """
-    form = RegistroForm()
-    
-    if form.validate_on_submit():
-        # Obtener datos del formulario validado
-        nombre = form.nombre.data
-        correo = form.correo.data
-        contraseña = form.contraseña.data
-        imagen = form.imagen.data  # Archivo de imagen (opcional)
-        
-        # Verificar que el usuario no exista
-        try:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("SELECT * FROM usuario WHERE correo = %s", (correo,))
-            usuario_existente = cur.fetchone()
-            
-            if usuario_existente:
-                flash('El correo ingresado ya se encuentra en uso', 'danger')
-                cur.close()
-                conn.close()
-                return render_template('registro.html', form=form)
-            
-            # Manejar la subida de imagen de perfil
-            imagen_filename = None
-            if imagen and imagen.filename:
-                # Generar un nombre de archivo seguro
-                imagen_filename = secure_filename(imagen.filename)
-                # Guardar la imagen en la carpeta de uploads
-                imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], imagen_filename))
-            
-            # Encriptar la contraseña antes de guardarla
-            hashed_password = generate_password_hash(contraseña)
-            
-            # Insertar el nuevo usuario en la tabla 'usuario'
-            cur.execute("INSERT INTO usuario (nombre, correo, contraseña, imagen) VALUES (%s, %s, %s, %s)",
-                        (nombre, correo, hashed_password, imagen_filename))
-            conn.commit()  # Guardar cambios
-            
-            # Cerrar conexión
-            cur.close()
-            conn.close()
-            
-            flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
-            return redirect(url_for('iniciar_sesion'))
-        
-        except Exception as e:
-            flash(f'Error al registrar usuario: {e}', 'danger')
-            return render_template('registro.html', form=form)
-    
-    # Si es GET o el formulario no es válido, mostrar el formulario
-    return render_template('registro.html', form=form)
 
 @app.route('/contacto', methods=['GET', 'POST'])
 def contacto():
@@ -473,67 +473,71 @@ def inicio_privado():
 @login_required
 def sobre_nosotros():
     """Página con información sobre la organización."""
-    return render_template('sobre_nosotros.html')
+    return render_template('institucional/sobre_nosotros.html')
 
 @app.route('/equipo')
 @login_required
 def equipo():
     """Página con información del equipo de trabajo."""
-    return render_template('equipo.html')
+    return render_template('institucional/equipo.html')
 
 @app.route('/comunidad')
 @login_required
 def comunidad():
     """Página con información sobre la comunidad."""
-    return render_template('comunidad.html')
+    return render_template('institucional/comunidad.html')
 
 @app.route('/territorio')
 @login_required
 def territorio():
     """Página con información sobre el territorio y geografía."""
-    return render_template('territorio.html')
+    return render_template('institucional/territorio.html')
 
 @app.route('/cosmovision')
 @login_required
 def cosmovision():
     """Página sobre la cosmovisión y filosofía de las comunidades."""
-    return render_template('cosmovision.html')
+    return render_template('institucional/cosmovision.html')
 
 @app.route('/objetivos')
 @login_required
 def objetivos():
     """Página con los objetivos estratégicos de la organización."""
-    return render_template('objetivos.html')
+    return render_template('institucional/objetivos.html')
 
 @app.route('/mision')
 @login_required
 def mision():
     """Página con la misión de la organización."""
-    return render_template('mision.html')
+    return render_template('institucional/mision.html')
 
 @app.route('/identidad')
 @login_required
 def identidad():
     """Página sobre la identidad cultural de las comunidades."""
-    return render_template('identidad.html')
+    return render_template('institucional/identidad.html')
 
 @app.route('/mision-espiritual')
 @login_required
 def mision_espiritual():
     """Página sobre la misión espiritual y valores."""
-    return render_template('mision_espiritual.html')
+    return render_template('institucional/mision_espiritual.html')
 
 @app.route('/modulo')
 @login_required
 def modulo():
     """Página del módulo educativo o de capacitación."""
-    return render_template('modulo.html')
+    return render_template('institucional/modulo.html')
 
 @app.route('/historia')
 @login_required
 def historia():
     """Página con la historia de la organización."""
-    return render_template('historia.html')
+    return render_template('institucional/historia.html')
+
+# ============================================================================
+# RUTAS DE GESTIÓN DE PROYECTOS
+# ============================================================================
 
 @app.route('/proyectos')
 def proyectos():
@@ -546,7 +550,7 @@ def proyectos():
     Returns:
         Template: Renderiza proyectos.html
     """
-    return render_template('proyectos.html')
+    return render_template('proyects/proyectos.html')
 
 @app.route('/proyecto/<int:id>')
 def ver_proyecto(id):
@@ -573,7 +577,37 @@ def ver_proyecto(id):
         'descripcion': 'Descripción del proyecto',
         # Agregar más campos según la estructura de la BD
     }
-    return render_template('ver_proyecto.html', proyecto=proyecto)
+    return render_template('proyects/ver_proyecto.html', proyecto=proyecto)
+
+@app.route('/agregar-proyecto')
+@login_required
+def agregar_proyecto():
+    """
+    Formulario para crear un nuevo proyecto.
+    
+    Returns:
+        Template: Renderiza agregar_proyecto.html
+        
+    Note: Solo muestra el formulario. Debería tener método POST
+          para procesar la creación del proyecto.
+    """
+    return render_template('proyects/agregar_proyecto.html')
+
+@app.route('/editar-proyecto/<int:id>')
+@login_required
+def editar_proyecto(id):
+    """
+    Formulario para editar un proyecto existente.
+    
+    Args:
+        id (int): ID del proyecto a editar
+        
+    Returns:
+        Template: Renderiza editar_proyecto.html
+        
+    Note: Debería cargar datos del proyecto y permitir POST para guardar cambios.
+    """
+    return render_template('proyects/editar_proyecto.html')
 
 # ============================================================================
 # RUTAS DE GESTIÓN DE NOTICIAS
@@ -590,7 +624,7 @@ def noticias():
     Returns:
         Template: Renderiza noticias.html
     """
-    return render_template('noticias.html')
+    return render_template('noticias/noticias.html')
 
 @app.route('/noticia/<int:id>')
 def ver_noticia(id):
@@ -615,7 +649,36 @@ def ver_noticia(id):
         'contenido': 'Contenido de la noticia',
         # Agregar más campos: fecha, autor, imagen, etc.
     }
-    return render_template('ver_noticia.html', noticia=noticia)
+    return render_template('noticias/ver_noticia.html', noticia=noticia)
+
+@app.route('/agregar-noticia')
+@login_required
+def agregar_noticia():
+    """
+    Formulario para crear una nueva noticia.
+    
+    Returns:
+        Template: Renderiza agregar_noticia.html
+        
+    Note: Debería soportar POST para guardar la noticia en BD
+    """
+    return render_template('noticias/agregar_noticia.html')
+
+@app.route('/editar-noticia/<int:id>')
+@login_required
+def editar_noticia(id):
+    """
+    Formulario para editar una noticia existente.
+    
+    Args:
+        id (int): ID de la noticia a editar
+        
+    Returns:
+        Template: Renderiza editar_noticia.html
+        
+    Note: Debería cargar datos de la noticia y soportar POST para guardar cambios
+    """
+    return render_template('noticias/editar_noticia.html')
 
 # ============================================================================
 # RUTAS DE GESTIÓN DE USUARIOS Y PERFILES
@@ -642,8 +705,8 @@ def perfil():
             flash('Usuario no encontrado', 'danger')
             return redirect(url_for('inicio_privado'))
             
-        return render_template('perfil.html', usuario=usuario)
-        
+        return render_template('user/perfil.html', usuario=usuario)
+
     except Exception as e:
         flash(f'Error al cargar perfil: {e}', 'danger')
         return redirect(url_for('inicio_privado'))
@@ -700,7 +763,7 @@ def editar_perfil():
                 flash('El correo ingresado ya está siendo usado por otro usuario', 'danger')
                 cur.close()
                 conn.close()
-                return render_template('editar_perfil.html', form=form, usuario=usuario)
+                return render_template('auth/editar_perfil.html', form=form, usuario=usuario)
             
             # Manejar la subida de nueva foto de perfil
             foto_filename = usuario.get('imagen')  # Mantener la foto actual por defecto
@@ -728,7 +791,7 @@ def editar_perfil():
             
         except Exception as e:
             flash(f'Error al actualizar perfil: {e}', 'danger')
-            return render_template('editar_perfil.html', form=form, usuario=usuario)
+            return render_template('user/editar_perfil.html', form=form, usuario=usuario)
     
     # Si es GET, pre-rellenar el formulario con los datos actuales
     if request.method == 'GET':
@@ -737,71 +800,8 @@ def editar_perfil():
         form.telefono.data = usuario.get('telefono', '')
         form.direccion.data = usuario.get('direccion', '')
         form.biografia.data = usuario.get('biografia', '')
-    
-    return render_template('editar_perfil.html', form=form, usuario=usuario)
 
-# ============================================================================
-# RUTAS DE ADMINISTRACIÓN DE CONTENIDO (REQUIEREN AUTENTICACIÓN)
-# ============================================================================
-
-@app.route('/agregar-proyecto')
-@login_required
-def agregar_proyecto():
-    """
-    Formulario para crear un nuevo proyecto.
-    
-    Returns:
-        Template: Renderiza agregar_proyecto.html
-        
-    Note: Solo muestra el formulario. Debería tener método POST
-          para procesar la creación del proyecto.
-    """
-    return render_template('agregar_proyecto.html')
-
-@app.route('/editar-proyecto/<int:id>')
-@login_required
-def editar_proyecto(id):
-    """
-    Formulario para editar un proyecto existente.
-    
-    Args:
-        id (int): ID del proyecto a editar
-        
-    Returns:
-        Template: Renderiza editar_proyecto.html
-        
-    Note: Debería cargar datos del proyecto y permitir POST para guardar cambios.
-    """
-    return render_template('editar_proyecto.html')
-
-@app.route('/agregar-noticia')
-@login_required
-def agregar_noticia():
-    """
-    Formulario para crear una nueva noticia.
-    
-    Returns:
-        Template: Renderiza agregar_noticia.html
-        
-    Note: Debería soportar POST para guardar la noticia en BD
-    """
-    return render_template('agregar_noticia.html')
-
-@app.route('/editar-noticia/<int:id>')
-@login_required
-def editar_noticia(id):
-    """
-    Formulario para editar una noticia existente.
-    
-    Args:
-        id (int): ID de la noticia a editar
-        
-    Returns:
-        Template: Renderiza editar_noticia.html
-        
-    Note: Debería cargar datos de la noticia y soportar POST para guardar cambios
-    """
-    return render_template('editar_noticia.html')
+    return render_template('user/editar_perfil.html', form=form, usuario=usuario)
 
 # ============================================================================
 # PUNTO DE ENTRADA DE LA APLICACIÓN

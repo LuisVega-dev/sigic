@@ -1,7 +1,32 @@
-Se necesitan las siguiente extensiones
+Requisitos de Instalación – Proyecto FLASK
 
-FLASK: para instalarlo, ve a la terminal de Windows y pega el siguiente comando "pip install Flask" sin comillas.
-Flask_cors: Es el mis procedimiento para instalar flask, solo que vas a poner el siguiente comando "pip install flask-cors" sin comillas.
-pymysql: Es el mismo procedimiento que el anterior solo cambiamos el comando a "pip install pymysql" sin comillas.
-flask_wtf: El mismo proceso pero con el comando "pip install -U Flask-WTF" sin comillas.
-Email_validator: El mismo proceso pero con el comnado "pip install email-validator" sin comillas.
+Para garantizar el correcto funcionamiento del sistema, se deben instalar las siguientes extensiones en el entorno de desarrollo. A continuación se detallan los paquetes requeridos y los comandos necesarios para su instalación:
+
+Paquetes Requeridos:
+
+1. Flask
+   Comando: pip install Flask
+   Descripción: Framework ligero para aplicaciones web en Python.
+
+2. flask-cors
+   Comando: pip install flask-cors
+   Descripción: Habilita solicitudes CORS entre dominios.
+
+3. PyMySQL
+   Comando: pip install pymysql
+   Descripción: Conector para bases de datos MySQL desde Python.
+
+4. Flask-WTF
+   Comando: pip install -U Flask-WTF
+   Descripción: Integra formularios WTForms con Flask.
+
+5. email-validator
+   Comando: pip install email-validator
+   Descripción: Validación avanzada de direcciones de correo electrónico.
+
+Instrucciones de Instalación:
+
+- Abra la terminal de Windows (PowerShell o CMD).
+- Ejecute cada comando en el orden indicado.
+- Verifique que no se presenten errores durante la instalación.
+- Confirme que los paquetes estén disponibles desde el entorno de desarrollo..

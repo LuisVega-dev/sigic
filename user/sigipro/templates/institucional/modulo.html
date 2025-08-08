@@ -2,6 +2,10 @@
 
 {% block title %}Materiales Educativos Interculturales - SIGI{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='dist/css/modulo.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="educativo-container">
     <header class="educativo-header">
@@ -9,82 +13,113 @@
         <p class="lead">Explora recursos educativos diseñados especialmente para estudiantes y docentes del Pueblo Arhuaco. Aquí encontrarás guías, videos, juegos y actividades en Iku y español, que fortalecen el conocimiento sobre nuestro territorio y cultura.</p>
     </header>
 
+    <!-- Estadísticas -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-info">
+                <h3 id="total-guias">{{ total_guias }}</h3>
+                <p>Guías disponibles</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🎥</div>
+            <div class="stat-info">
+                <h3 id="total-videos">{{ total_videos }}</h3>
+                <p>Videos educativos</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">❓</div>
+            <div class="stat-info">
+                <h3 id="total-preguntas">{{ total_preguntas }}</h3>
+                <p>Preguntas interactivas</p>
+            </div>
+        </div>
+    </div>
+
     <div class="categorias-grid">
         <!-- Guías de Estudio -->
-        <div class="categoria-card" id="guias-card">
+        <div class="categoria-card" data-card="guias">
             <div class="categoria-icono">📘</div>
             <h3>Guías de estudio</h3>
             <p>Material didáctico en formato PDF para el aprendizaje autónomo.</p>
-            <button class="btn-recursos" id="btn-guias">Ver guías</button>
-            
-            <!-- Contenedor de guías (inicialmente oculto) -->
-            <div id="contenedor-guias" style="display: none; margin-top: 20px;">
+            <button class="btn-recursos" onclick="toggleCard('guias', this)">Ver guías</button>
+            <div class="contenedor-recursos" id="contenedor-guias" style="display: none;">
                 <h4 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Guías Disponibles</h4>
                 
                 <!-- Lista de guías -->
-                <div class="guias-lista">
-                    <!-- Las guías se cargarán aquí dinámicamente -->
+                <div class="guias-lista" id="guias-lista">
+                    <div class="loading-spinner">Cargando guías...</div>
                 </div>
                 
                 <!-- Formulario para subir nuevas guías -->
+                {% if session['user_admin'] %}
                 <div class="subir-guia" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
                     <h5 style="color: var(--primary-color);">Subir nueva guía</h5>
                     <form id="form-subir-guia" enctype="multipart/form-data" style="margin-top: 15px;">
                         <div class="form-group">
                             <label for="titulo-guia">Título de la guía:</label>
-                            <input type="text" id="titulo-guia" class="form-control" required>
+                            <input type="text" id="titulo-guia" name="titulo" class="form-control" required>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label for="categoria-guia">Categoría:</label>
+                            <select id="categoria-guia" name="categoria" class="form-control" required>
+                                <option value="">Seleccionar categoría</option>
+                                <option value="general">General</option>
+                                <option value="lenguaje">Lenguaje</option>
+                                <option value="historia">Historia</option>
+                                <option value="cultura">Cultura</option>
+                            </select>
                         </div>
                         <div class="form-group" style="margin-top: 10px;">
                             <label for="archivo-guia">Seleccionar archivo PDF:</label>
-                            <input type="file" id="archivo-guia" class="form-control" accept=".pdf" required>
+                            <input type="file" id="archivo-guia" name="archivo" class="form-control" accept=".pdf" required>
                         </div>
                         <button type="submit" class="btn-recursos" style="margin-top: 15px; width: 100%;">
                             Subir Guía
                         </button>
                     </form>
                 </div>
+                {% endif %}
             </div>
         </div>
 
         <!-- Videos Pedagógicos -->
-        <div class="categoria-card" id="videos-card">
+        <div class="categoria-card" data-card="videos">
             <div class="categoria-icono">🎥</div>
             <h3>Videos pedagógicos</h3>
             <p>Contenido audiovisual educativo sobre nuestra cultura y tradiciones.</p>
-            <button class="btn-recursos" id="btn-videos">Ver videos</button>
-            
-            <!-- Contenedor de videos (inicialmente oculto) -->
-            <div id="contenedor-videos" style="display: none; margin-top: 20px;">
+            <button class="btn-recursos" onclick="toggleCard('videos', this)">Ver videos</button>
+            <div class="contenedor-recursos" id="contenedor-videos" style="display: none;">
                 <h4 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Videos Educativos</h4>
                 
                 <!-- Lista de videos -->
-                <div class="videos-lista">
-                    <!-- Los videos se cargarán aquí dinámicamente -->
+                <div class="videos-lista" id="videos-lista">
+                    <div class="loading-spinner">Cargando videos...</div>
                 </div>
             </div>
         </div>
 
         <!-- Actividades Interactivas -->
-        <div class="categoria-card" id="actividades-card">
+        <div class="categoria-card" data-card="actividades">
             <div class="categoria-icono">🧠</div>
             <h3>Actividades interactivas</h3>
             <p>Ejercicios prácticos para reforzar el aprendizaje de manera dinámica.</p>
-            <button class="btn-recursos" id="btn-actividades">Iniciar actividad</button>
-            
-            <!-- Contenedor de preguntas (inicialmente oculto) -->
-            <div id="contenedor-preguntas" style="display: none; margin-top: 20px; text-align: left;">
+            <button class="btn-recursos" onclick="toggleCard('actividades', this)">Iniciar actividad</button>
+            <div class="contenedor-recursos" id="contenedor-preguntas" style="display: none;">
                 <h4 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Preguntas Interactivas</h4>
                 
                 <!-- Pestañas de categorías -->
                 <div class="categorias-tabs">
-                    <button class="tab-btn active" data-categoria="cultura">Cultura y Costumbres</button>
-                    <button class="tab-btn" data-categoria="practicas">Prácticas Culturales</button>
-                    <button class="tab-btn" data-categoria="sagrado">Lugar Sagrado</button>
+                    <button class="tab-btn active" data-categoria="cultura" onclick="cambiarCategoria('cultura', this)">Cultura y Costumbres</button>
+                    <button class="tab-btn" data-categoria="practicas" onclick="cambiarCategoria('practicas', this)">Prácticas Culturales</button>
+                    <button class="tab-btn" data-categoria="sagrado" onclick="cambiarCategoria('sagrado', this)">Lugar Sagrado</button>
                 </div>
                 
                 <!-- Contenedor de preguntas por categoría -->
-                <div class="preguntas-container">
-                    <!-- Las preguntas se cargarán aquí dinámicamente -->
+                <div class="preguntas-container" id="preguntas-container">
+                    <div class="loading-spinner">Cargando preguntas...</div>
                 </div>
             </div>
         </div>
@@ -94,7 +129,7 @@
             <div class="categoria-icono">🎮</div>
             <h3>Juegos educativos</h3>
             <p>Aprende jugando con nuestras propuestas lúdicas en Iku y español.</p>
-            <a href="#" class="btn-recursos">Jugar ahora</a>
+            <a href="#" class="btn-recursos">Próximamente</a>
         </div>
 
         <!-- Trivias Culturales -->
@@ -102,753 +137,503 @@
             <div class="categoria-icono">❓</div>
             <h3>Trivias culturales</h3>
             <p>Pon a prueba tus conocimientos sobre la cultura Arhuaca.</p>
-            <a href="#" class="btn-recursos">Responder trivia</a>
+            <a href="#" class="btn-recursos">Próximamente</a>
+        </div>
+    </div>
+
+    <!-- Modal de mensajes -->
+    <div id="modal-mensaje" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-icon" id="modal-icon">✅</span>
+                <h3 id="modal-titulo">Éxito</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modal-texto"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal" onclick="cerrarModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reemplazar los modals de Bootstrap con modals personalizados -->
+    <!-- Modal para editar guías -->
+    <div id="editarGuiaModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Guía</h3>
+                <span class="close" onclick="cerrarModalEditar()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarGuia">
+                    <input type="hidden" id="editarGuiaId">
+                    <div class="form-group">
+                        <label for="editarTitulo">Título:</label>
+                        <input type="text" id="editarTitulo" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="editarCategoria">Categoría:</label>
+                        <select id="editarCategoria" class="form-control">
+                            <option value="general">General</option>
+                            <option value="lenguaje">Lenguaje</option>
+                            <option value="historia">Historia</option>
+                            <option value="cultura">Cultura</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal secondary" onclick="cerrarModalEditar()">Cancelar</button>
+                <button type="button" class="btn-modal primary" onclick="guardarCambiosGuia()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div id="confirmarEliminarModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar Eliminación</h3>
+                <span class="close" onclick="cerrarModalEliminar()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar la guía "<span id="nombreGuiaEliminar"></span>"?</p>
+                <p style="color: #e74c3c; font-weight: bold;">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal secondary" onclick="cerrarModalEliminar()">Cancelar</button>
+                <button type="button" class="btn-modal danger" onclick="confirmarEliminacion()">Eliminar</button>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --light-bg: #f8f9fa;
-    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s ease;
-}
-
-.educativo-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-}
-
-.educativo-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    padding: 1.5rem;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: var(--card-shadow);
-}
-
-.educativo-header h1 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-    font-size: 2.2rem;
-}
-
-.educativo-header p {
-    font-size: 1.1rem;
-    color: #555;
-    max-width: 800px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-.categorias-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    padding: 1rem 0;
-}
-
-.categoria-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.8rem;
-    text-align: center;
-    box-shadow: var(--card-shadow);
-    transition: var(--transition);
-    cursor: pointer;
-    border: 1px solid #e1e4e8;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.categoria-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.categoria-icono {
-    font-size: 2.5rem;
-    margin-bottom: 1.2rem;
-}
-
-.categoria-card h3 {
-    color: var(--primary-color);
-    margin: 0.8rem 0;
-    font-size: 1.4rem;
-}
-
-.categoria-card p {
-    color: #666;
-    margin-bottom: 1.5rem;
-    flex-grow: 1;
-    line-height: 1.5;
-}
-
-.btn-recursos {
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    width: 80%;
-    margin: 0 auto;
-    font-size: 1rem;
-}
-
-.btn-recursos:hover {
-    background-color: #2980b9;
-    transform: scale(1.05);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .categorias-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .educativo-header h1 {
-        font-size: 1.8rem;
-    }
-    
-    .educativo-header p {
-        font-size: 1rem;
-    }
-}
-
-/* Estilos para las pestañas */
-.categorias-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.tab-btn {
-    padding: 8px 15px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.tab-btn.active {
-    background-color: var(--secondary-color);
-    color: white;
-    border-color: var(--secondary-color);
-}
-
-/* Estilos para las guías */
-.guias-lista {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.guia-item {
-    background: #fff;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    transition: transform 0.3s ease;
-}
-
-.guia-item:hover {
-    transform: translateY(-3px);
-}
-
-.guia-icono {
-    font-size: 2rem;
-    margin-right: 15px;
-    color: var(--secondary-color);
-}
-
-.guia-info {
-    flex: 1;
-}
-
-.guia-info h5 {
-    margin: 0 0 5px 0;
-    color: var(--primary-color);
-}
-
-.guia-info p {
-    margin: 0;
-    color: #666;
-    font-size: 0.85rem;
-}
-
-.descargar-btn {
-    background: var(--secondary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 5px;
-}
-
-.descargar-btn:hover {
-    background: #0056b3;
-}
-
-/* Estilos para el formulario */
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-/* Estilos para los videos */
-.videos-lista {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.video-item {
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.video-item:hover {
-    transform: translateY(-5px);
-}
-
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
-    height: 0;
-    overflow: hidden;
-}
-
-.video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-.video-info {
-    padding: 15px;
-}
-
-.video-info h5 {
-    margin: 0 0 10px 0;
-    color: var(--primary-color);
-}
-
-.video-info p {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* Estilos para las preguntas */
-.pregunta {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.pregunta h4 {
-    margin-top: 0;
-    color: var(--primary-color);
-    font-size: 1.1rem;
-}
-
-.opciones {
-    margin: 15px 0;
-}
-
-.opcion {
-    display: block;
-    padding: 10px 15px;
-    margin: 8px 0;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.opcion:hover {
-    background-color: #f0f8ff;
-    border-color: #b3d7ff;
-}
-
-.opcion.correcta {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-}
-
-.opcion.incorrecta {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
-
-.explicacion {
-    display: none;
-    margin-top: 15px;
-    padding: 12px;
-    background-color: #e2f3ff;
-    border-radius: 6px;
-    border-right: 4px solid var(--secondary-color);
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.categoria-card {
-    animation: fadeIn 0.6s ease-out forwards;
-    opacity: 0;
-}
-
-.categoria-card:nth-child(1) { animation-delay: 0.1s; }
-.categoria-card:nth-child(2) { animation-delay: 0.2s; }
-.categoria-card:nth-child(3) { animation-delay: 0.3s; }
-.categoria-card:nth-child(4) { animation-delay: 0.4s; }
-.categoria-card:nth-child(5) { animation-delay: 0.5s; }
-</style>
-
 <script>
-// Base de datos de preguntas por categoría
-const preguntas = {
-    cultura: [
-        {
-            pregunta: "¿Cómo interpretan los Arhuacos el concepto de 'Ley de Origen' y cómo rige su vida cotidiana?",
-            opciones: [
-                { texto: "Es un conjunto de reglas escritas que deben seguirse al pie de la letra", esCorrecta: false },
-                { texto: "Es un sistema de conocimiento ancestral que guía su relación con la naturaleza y la comunidad", esCorrecta: true },
-                { texto: "Son tradiciones antiguas que ya no tienen relevancia en la actualidad", esCorrecta: false }
-            ],
-            explicacion: "La Ley de Origen es el fundamento de la cultura Arhuaca, un sistema de conocimiento que rige su relación con la naturaleza, la comunidad y el universo, transmitido por los Mamos."
-        },
-        {
-            pregunta: "¿Qué papel juegan los Mamos en la transmisión del conocimiento espiritual y la toma de decisiones comunitarias?",
-            opciones: [
-                { texto: "Son líderes políticos que toman decisiones unilaterales", esCorrecta: false },
-                { texto: "Son guías espirituales que interpretan la Ley de Origen y orientan a la comunidad", esCorrecta: true },
-                { texto: "Son ancianos sin un rol activo en la comunidad actual", esCorrecta: false }
-            ],
-            explicacion: "Los Mamos son autoridades espirituales que interpretan la Ley de Origen, guían a la comunidad y toman decisiones basadas en su sabiduría ancestral."
-        },
-        {
-            pregunta: "¿Por qué el algodón es considerado un elemento sagrado en su artesanía y vestimenta?",
-            opciones: [
-                { texto: "Porque es fácil de conseguir y trabajar", esCorrecta: false },
-                { texto: "Porque representa la conexión entre la Madre Tierra y el pensamiento puro", esCorrecta: true },
-                { texto: "Porque es resistente al clima de la Sierra Nevada", esCorrecta: false }
-            ],
-            explicacion: "El algodón es símbolo de pureza y pensamiento, usado en rituales y tejidos sagrados por los Arhuacos, representando la conexión con la Madre Tierra."
-        },
-        {
-            pregunta: "¿Cómo interpretan los Arhuacos los sueños como herramienta de guía espiritual y toma de decisiones?",
-            opciones: [
-                { texto: "Los consideran mensajes espirituales importantes que guían sus decisiones", esCorrecta: true },
-                { texto: "Son solo experiencias aleatorias sin significado especial", esCorrecta: false },
-                { texto: "Son vistos como supersticiones sin relevancia en la vida diaria", esCorrecta: false }
-            ],
-            explicacion: "Los sueños son considerados mensajes de los espíritus y ancestros, que los Mamos interpretan para guiar a la comunidad en la toma de decisiones importantes."
-        }
-    ],
-    practicas: [
-        {
-            pregunta: "¿Por qué el poporo es un objeto sagrado para los Arhuacos y qué simboliza su uso en rituales?",
-            opciones: [
-                { texto: "Es un simple recipiente para guardar hojas de coca", esCorrecta: false },
-                { texto: "Simboliza el útero femenino y la continuidad de la vida", esCorrecta: true },
-                { texto: "Es un objeto decorativo sin mayor significado", esCorrecta: false }
-            ],
-            explicacion: "El poporo es un objeto ritual que representa el útero femenino y la continuidad de la vida. Su uso en rituales con hojas de coca y conchas molidas simboliza la armonía y el equilibrio cósmico."
-        },
-        {
-            pregunta: "¿Cómo se elaboran las mochilas Arhuacas y qué significan sus diseños y colores?",
-            opciones: [
-                { texto: "Son tejidas a mano con diseños que representan elementos de la naturaleza y la cosmovisión Arhuaca", esCorrecta: true },
-                { texto: "Son compradas en el mercado con diseños modernos", esCorrecta: false },
-                { texto: "Son hechas con máquinas de tejer industriales", esCorrecta: false }
-            ],
-            explicacion: "Las mochilas Arhuacas son tejidas a mano por las mujeres, con diseños que representan elementos de la naturaleza y la cosmovisión de su pueblo. Cada color y patrón tiene un significado espiritual y cultural profundo."
-        },
-        {
-            pregunta: "¿Cómo se prepara física y espiritualmente un joven Arhuaco para convertirse en Mamo?",
-            opciones: [
-                { texto: "Asistiendo a una universidad occidental", esCorrecta: false },
-                { texto: "A través de un riguroso entrenamiento espiritual en las montañas sagradas", esCorrecta: true },
-                { texto: "Participando en concursos de conocimiento", esCorrecta: false }
-            ],
-            explicacion: "Los futuros Mamos son seleccionados desde niños y pasan por un largo período de aislamiento en las montañas sagradas, donde aprenden los secretos de la naturaleza, la medicina tradicional y la sabiduría ancestral."
-        },
-        {
-            pregunta: "¿Qué papel juegan los cantos tradicionales (Iku) en los rituales de sanación?",
-            opciones: [
-                { texto: "Son solo entretenimiento durante las ceremonias", esCorrecta: false },
-                { texto: "Son herramientas poderosas para la sanación física y espiritual", esCorrecta: true },
-                { texto: "Son canciones populares sin propósito específico", esCorrecta: false }
-            ],
-            explicacion: "Los cantos tradicionales Iku son considerados herramientas poderosas de sanación que conectan al individuo con las fuerzas espirituales y ayudan a restaurar el equilibrio energético."
-        }
-    ],
-    sagrado: [
-        {
-            pregunta: "¿Qué estrategias ha implementado el pueblo Arhuaco para defender su territorio ante proyectos extractivos?",
-            opciones: [
-                { texto: "Han abandonado sus territorios tradicionales", esCorrecta: false },
-                { texto: "Han establecido sistemas de vigilancia comunitaria y acciones legales", esCorrecta: true },
-                { texto: "Han permitido el ingreso de empresas mineras con ciertas condiciones", esCorrecta: false }
-            ],
-            explicacion: "Los Arhuacos han implementado diversas estrategias como la creación de guardias indígenas, acciones legales, y la difusión de su situación a nivel internacional para proteger sus territorios sagrados."
-        },
-        {
-            pregunta: "¿Cómo funciona su gobierno propio y qué rol juegan las guardias indígenas en la protección de la Sierra Nevada?",
-            opciones: [
-                { texto: "No tienen un sistema organizado de gobierno", esCorrecta: false },
-                { texto: "Tienen una estructura de gobierno tradicional que incluye Mamos y autoridades comunitarias", esCorrecta: true },
-                { texto: "Siguen las mismas leyes del gobierno colombiano sin adaptaciones", esCorrecta: false }
-            ],
-            explicacion: "Los Arhuacos tienen un sistema de gobierno propio basado en la Ley de Origen, donde los Mamos son las máximas autoridades espirituales y las decisiones se toman en asambleas comunitarias. Las guardias indígenas protegen el territorio de amenazas externas."
-        },
-        {
-            pregunta: "¿Cómo protegen los Arhuacos los lugares sagrados (como ríos y montañas) de amenazas externas (minería, turismo)?",
-            opciones: [
-                { texto: "Permiten el acceso controlado a turistas y empresas", esCorrecta: false },
-                { texto: "Establecen cercas y restricciones de acceso basadas en su cosmovisión", esCorrecta: true },
-                { texto: "No toman medidas especiales de protección", esCorrecta: false }
-            ],
-            explicacion: "Los Arhuacos protegen sus lugares sagrados a través de la educación comunitaria, la resistencia pacífica, y la aplicación de sus propias leyes ancestrales, limitando el acceso a estos espacios según su cosmovisión."
-        },
-        {
-            pregunta: "¿Cómo definen los Arhuacos los límites de la 'Línea Negra' y qué herramientas usan para protegerla?",
-            opciones: [
-                { texto: "Es un límite geopolítico establecido por el gobierno", esCorrecta: false },
-                { texto: "Es un territorio sagrado que incluye sitios ceremoniales y ecosistemas vitales", esCorrecta: true },
-                { texto: "Es una zona de explotación de recursos naturales", esCorrecta: false }
-            ],
-            explicacion: "La Línea Negra es un territorio sagrado que los Arhuacos definen como un espacio de equilibrio ecológico y espiritual, que incluye sitios ceremoniales, nacimientos de agua y ecosistemas vitales. La protegen mediante la vigilancia comunitaria y acciones legales."
-        },
-        {
-            pregunta: "¿Qué consecuencias espirituales creen que ocurrirían si un lugar sagrado como el río Guatapurí es contaminado?",
-            opciones: [
-                { texto: "No tiene consecuencias importantes", esCorrecta: false },
-                { texto: "Puede romper el equilibrio espiritual y afectar la salud del pueblo", esCorrecta: true },
-                { texto: "Solo afecta a los peces", esCorrecta: false }
-            ],
-            explicacion: "La contaminación de un río sagrado puede alterar el equilibrio del territorio y causar desarmonía espiritual según los Mamos, afectando tanto a la comunidad como al ecosistema en su conjunto."
-        },
-        {
-            pregunta: "¿Existen lugares sagrados compartidos con los pueblos Kogui, Wiwa o Kankuamo? ¿Cómo los gestionan?",
-            opciones: [
-                { texto: "No comparten lugares sagrados con otros pueblos", esCorrecta: false },
-                { texto: "Sí, comparten sitios sagrados y los gestionan mediante acuerdos interétnicos", esCorrecta: true },
-                { texto: "Cada pueblo tiene sus propios lugares sin coordinación entre ellos", esCorrecta: false }
-            ],
-            explicacion: "Los pueblos indígenas de la Sierra Nevada comparten algunos sitios sagrados y han establecido acuerdos interétnicos para su protección y gestión conjunta, respetando las tradiciones de cada pueblo."
-        },
-        {
-            pregunta: "¿Cómo se integra el conocimiento geográfico ancestral con los mapas digitales (SIG) en su lucha territorial?",
-            opciones: [
-                { texto: "Rechazan completamente la tecnología moderna", esCorrecta: false },
-                { texto: "Combinan su conocimiento ancestral con tecnología SIG para documentar y proteger su territorio", esCorrecta: true },
-                { texto: "Solo confían en la memoria oral sin registros físicos o digitales", esCorrecta: false }
-            ],
-            explicacion: "Los Arhuacos han aprendido a integrar los Sistemas de Información Geográfica (SIG) con su conocimiento ancestral para mapear y documentar su territorio, fortaleciendo así sus estrategias de defensa territorial y gestión ambiental."
-        }
-    ]
-};
-
 // Variables globales
 let categoriaActual = 'cultura';
+let currentOpenCard = null;
+let guiaAEliminar = null;
 
-// Función para mostrar/ocultar preguntas
-document.getElementById('btn-actividades').addEventListener('click', function() {
-    const contenedor = document.getElementById('contenedor-preguntas');
-    const boton = document.getElementById('btn-actividades');
+// Función para hacer peticiones AJAX
+async function fetchData(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            ...options
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Error en la petición:', error);
+        return { success: false, mensaje: 'Error de conexión' };
+    }
+}
+
+// Función principal para alternar tarjetas
+function toggleCard(cardType, button) {
+    const contenedorId = 'contenedor-' + (cardType === 'actividades' ? 'preguntas' : cardType);
+    const contenedor = document.getElementById(contenedorId);
     
-    if (contenedor.style.display === 'none') {
-        contenedor.style.display = 'block';
-        boton.textContent = 'Ocultar actividades';
-        cargarPreguntas(categoriaActual);
-    } else {
+    // Si hay otra tarjeta abierta, cerrarla
+    if (currentOpenCard && currentOpenCard !== cardType) {
+        closeCard(currentOpenCard);
+    }
+    
+    // Alternar la tarjeta actual
+    if (contenedor.style.display === 'block') {
         contenedor.style.display = 'none';
-        boton.textContent = 'Iniciar actividad';
+        button.textContent = getOriginalButtonText(cardType);
+        currentOpenCard = null;
+    } else {
+        contenedor.style.display = 'block';
+        button.textContent = getCloseButtonText(cardType);
+        currentOpenCard = cardType;
+        
+        // Cargar contenido según el tipo
+        loadContent(cardType);
     }
-});
+}
 
-// Función para cargar preguntas de una categoría
-function cargarPreguntas(categoria) {
-    const contenedor = document.querySelector('.preguntas-container');
-    contenedor.innerHTML = ''; // Limpiar preguntas anteriores
+// Función para cerrar una tarjeta específica
+function closeCard(cardType) {
+    const contenedorId = 'contenedor-' + (cardType === 'actividades' ? 'preguntas' : cardType);
+    const contenedor = document.getElementById(contenedorId);
+    const button = document.querySelector(`[data-card="${cardType}"] .btn-recursos`);
     
-    if (!preguntas[categoria] || preguntas[categoria].length === 0) {
-        contenedor.innerHTML = '<p>No hay preguntas disponibles en esta categoría.</p>';
-        return;
+    if (contenedor && button) {
+        contenedor.style.display = 'none';
+        button.textContent = getOriginalButtonText(cardType);
     }
+}
+
+// Función para obtener el texto original del botón
+function getOriginalButtonText(cardType) {
+    switch(cardType) {
+        case 'guias': return 'Ver guías';
+        case 'videos': return 'Ver videos';
+        case 'actividades': return 'Iniciar actividad';
+        default: return 'Ver contenido';
+    }
+}
+
+// Función para obtener el texto de cerrar del botón
+function getCloseButtonText(cardType) {
+    switch(cardType) {
+        case 'guias': return 'Ocultar guías';
+        case 'videos': return 'Ocultar videos';
+        case 'actividades': return 'Ocultar actividades';
+        default: return 'Ocultar contenido';
+    }
+}
+
+// Función para cargar contenido
+function loadContent(cardType) {
+    switch(cardType) {
+        case 'guias':
+            cargarGuias();
+            break;
+        case 'videos':
+            cargarVideos();
+            break;
+        case 'actividades':
+            cargarPreguntas(categoriaActual);
+            break;
+    }
+}
+
+// Función para cambiar categoría de preguntas
+function cambiarCategoria(categoria, button) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    categoriaActual = categoria;
+    cargarPreguntas(categoria);
+}
+
+// Función para cargar guías desde el backend
+async function cargarGuias() {
+    const contenedor = document.getElementById('guias-lista');
+    contenedor.innerHTML = '<div class="loading-spinner">Cargando guías...</div>';
     
-    preguntas[categoria].forEach((pregunta, index) => {
-        const preguntaElement = document.createElement('div');
-        preguntaElement.className = 'pregunta';
-        preguntaElement.innerHTML = `
-            <h4>Pregunta ${index + 1}: ${pregunta.pregunta}</h4>
-            <div class="opciones">
-                ${pregunta.opciones.map((opcion, i) => 
-                    `<div class="opcion" data-correcta="${opcion.esCorrecta}">
-                        ${String.fromCharCode(65 + i)}) ${opcion.texto}
-                    </div>`
-                ).join('')}
+    const data = await fetchData('/api/guias');
+    
+    if (data.success) {
+        if (data.guias.length === 0) {
+            contenedor.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1 / -1;">No hay guías disponibles actualmente.</p>';
+            return;
+        }
+        
+        contenedor.innerHTML = data.guias.map(guia => `
+            <div class="guia-item">
+                <div class="guia-icono">📄</div>
+                <div class="guia-info">
+                    <h5>${guia.titulo}</h5>
+                    <p>${guia.tamano_formateado} • ${guia.fecha_formateada}</p>
+                    <div class="guia-acciones">
+                        <a href="/api/descargar-guia/${guia.id}" class="descargar-btn" target="_blank">
+                            Descargar
+                        </a>
+                        {% if session['user_admin'] %}
+                        <button class="btn-accion editar" onclick="editarGuia(${guia.id}, '${guia.titulo}', '${guia.categoria}')">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-accion eliminar" onclick="eliminarGuia(${guia.id}, '${guia.titulo}')">
+                            🗑️ Eliminar
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            <div class="explicacion">
-                <strong>Explicación:</strong> ${pregunta.explicacion}
+        `).join('');
+        
+        // Actualizar contador
+        document.getElementById('total-guias').textContent = data.guias.length;
+    } else {
+        contenedor.innerHTML = '<p style="text-align: center; color: #e74c3c;">Error al cargar las guías</p>';
+    }
+}
+
+// Función para cargar videos desde el backend
+async function cargarVideos() {
+    const contenedor = document.getElementById('videos-lista');
+    contenedor.innerHTML = '<div class="loading-spinner">Cargando videos...</div>';
+    
+    const data = await fetchData('/api/videos');
+    
+    if (data.success) {
+        contenedor.innerHTML = data.videos.map(video => `
+            <div class="video-item">
+                <div class="video-container">
+                    <iframe src="${video.url}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h5>${video.titulo}</h5>
+                    <p>${video.descripcion}</p>
+                    <small style="color: #666;">Duración: ${video.duracion}</small>
+                </div>
             </div>
-        `;
-        contenedor.appendChild(preguntaElement);
+        `).join('');
+    } else {
+        contenedor.innerHTML = '<p style="text-align: center; color: #e74c3c;">Error al cargar los videos</p>';
+    }
+}
+
+// Función para cargar preguntas desde el backend
+async function cargarPreguntas(categoria) {
+    const contenedor = document.getElementById('preguntas-container');
+    contenedor.innerHTML = '<div class="loading-spinner">Cargando preguntas...</div>';
+    
+    const data = await fetchData(`/api/preguntas/${categoria}`);
+    
+    if (data.success) {
+        if (data.preguntas.length === 0) {
+            contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay preguntas disponibles en esta categoría.</p>';
+            return;
+        }
+        
+        contenedor.innerHTML = data.preguntas.map((pregunta, index) => `
+            <div class="pregunta" data-pregunta-id="${pregunta.id}">
+                <h4>Pregunta ${index + 1}: ${pregunta.pregunta}</h4>
+                <div class="opciones">
+                    ${pregunta.opciones.map((opcion, i) => 
+                        `<div class="opcion" data-correcta="${opcion.es_correcta}" onclick="responderPregunta(this, ${pregunta.id}, ${i}, '${categoria}')">
+                            ${String.fromCharCode(65 + i)}) ${opcion.texto}
+                        </div>`
+                    ).join('')}
+                </div>
+                <div class="explicacion" id="explicacion-${pregunta.id}">
+                    <strong>Explicación:</strong> ${pregunta.explicacion}
+                </div>
+            </div>
+        `).join('');
+    } else {
+        contenedor.innerHTML = '<p style="text-align: center; color: #e74c3c;">Error al cargar las preguntas</p>';
+    }
+}
+
+// Función para responder pregunta (enviando al backend)
+async function responderPregunta(opcionElement, preguntaId, opcionSeleccionada, categoria) {
+    const data = await fetchData('/api/responder-pregunta', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            pregunta_id: preguntaId,
+            opcion_seleccionada: opcionSeleccionada,
+            categoria: categoria
+        })
     });
     
-    // Agregar event listeners a las opciones
-    document.querySelectorAll('.opcion').forEach(opcion => {
-        opcion.addEventListener('click', function() {
-            const esCorrecta = this.getAttribute('data-correcta') === 'true';
-            const explicacion = this.closest('.pregunta').querySelector('.explicacion');
+    if (data.success) {
+        const preguntaElement = opcionElement.closest('.pregunta');
+        const opciones = preguntaElement.querySelectorAll('.opcion');
+        
+        // Remover event listeners y estilos previos
+        opciones.forEach((opcion, index) => {
+            opcion.onclick = null;
+            opcion.classList.remove('correcta', 'incorrecta');
             
-            // Remover clases de selección previas
-            this.parentNode.querySelectorAll('.opcion').forEach(opt => {
-                opt.classList.remove('correcta', 'incorrecta');
-            });
-            
-            // Aplicar clase según si es correcta o no
-            if (esCorrecta) {
-                this.classList.add('correcta');
-            } else {
-                this.classList.add('incorrecta');
-                // Mostrar cuál era la correcta
-                this.parentNode.querySelector('[data-correcta="true"]').classList.add('correcta');
+            if (index === opcionSeleccionada) {
+                opcion.classList.add(data.es_correcta ? 'correcta' : 'incorrecta');
             }
             
-            // Mostrar explicación
-            if (explicacion) {
-                explicacion.style.display = 'block';
+            if (index === data.respuesta_correcta && !data.es_correcta) {
+                opcion.classList.add('correcta');
             }
         });
-    });
+        
+        // Mostrar explicación
+        document.getElementById(`explicacion-${preguntaId}`).style.display = 'block';
+    }
 }
 
-// Event listeners para las pestañas
-document.querySelectorAll('.tab-btn').forEach(boton => {
-    boton.addEventListener('click', function() {
-        // Remover clase activa de todos los botones
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        // Agregar clase activa al botón clickeado
-        this.classList.add('active');
-        // Actualizar categoría actual y cargar preguntas
-        categoriaActual = this.getAttribute('data-categoria');
-        cargarPreguntas(categoriaActual);
-    });
-});
-
-// Cargar preguntas de la categoría por defecto al inicio
-if (document.getElementById('contenedor-preguntas').style.display === 'block') {
-    cargarPreguntas(categoriaActual);
+// Función para mostrar modal
+function mostrarModal(titulo, mensaje, tipo = 'success') {
+    const modal = document.getElementById('modal-mensaje');
+    const modalTitulo = document.getElementById('modal-titulo');
+    const modalTexto = document.getElementById('modal-texto');
+    const modalIcon = document.getElementById('modal-icon');
+    
+    modalTitulo.textContent = titulo;
+    modalTexto.textContent = mensaje;
+    
+    if (tipo === 'success') {
+        modalIcon.textContent = '✅';
+    } else if (tipo === 'error') {
+        modalIcon.textContent = '❌';
+    }
+    
+    modal.style.display = 'block';
 }
 
-// Base de datos de videos
-const videos = [
-    {
-        titulo: "La Ley de Origen - Sabiduría Arhuaca",
-        descripcion: "Documental sobre los principios fundamentales de la Ley de Origen en la cultura Arhuaca.",
-        url: "https://www.youtube.com/embed/L_yP7m_SaRc"
-    },
-    {
-        titulo: "Tejidos y Simbolismo",
-        descripcion: "El significado profundo de los tejidos tradicionales Arhuacos y su conexión con la naturaleza.",
-        url: "https://www.youtube.com/embed/Qu1FrjSGvX0"
-    },
-    {
-        titulo: "Rituales de la Sierra Nevada",
-        descripcion: "Una mirada respetuosa a los rituales sagrados de los pueblos de la Sierra Nevada.",
-        url: "https://www.youtube.com/embed/nv3_aPJ8GNk"
-    }
-];
-
-// Función para cargar videos
-function cargarVideos() {
-    const contenedor = document.querySelector('.videos-lista');
-    if (!contenedor) return;
-    
-    contenedor.innerHTML = videos.map(video => `
-        <div class="video-item">
-            <div class="video-container">
-                <iframe src="${video.url}" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen></iframe>
-            </div>
-            <div class="video-info">
-                <h5>${video.titulo}</h5>
-                <p>${video.descripcion}</p>
-            </div>
-        </div>
-    `).join('');
+// Función para cerrar modal
+function cerrarModal() {
+    document.getElementById('modal-mensaje').style.display = 'none';
 }
 
-// Mostrar/ocultar videos
-document.getElementById('btn-videos')?.addEventListener('click', function() {
-    const contenedor = document.getElementById('contenedor-videos');
-    const boton = document.getElementById('btn-videos');
+// Función para abrir modal de edición (simplificada)
+function editarGuia(id, titulo, categoria) {
+    document.getElementById('editarGuiaId').value = id;
+    document.getElementById('editarTitulo').value = titulo;
+    document.getElementById('editarCategoria').value = categoria;
     
-    if (contenedor.style.display === 'none') {
-        contenedor.style.display = 'block';
-        boton.textContent = 'Ocultar videos';
-        cargarVideos();
-    } else {
-        contenedor.style.display = 'none';
-        boton.textContent = 'Ver videos';
-    }
-});
+    // Mostrar modal personalizado
+    document.getElementById('editarGuiaModal').style.display = 'block';
+}
 
-// Base de datos de guías (en un entorno real, esto vendría de un servidor)
-let guias = [
-    {
-        id: 1,
-        titulo: "Guía de la Lengua Iku",
-        archivo: "guia_lengua_iku.pdf",
-        fecha: "15/07/2023",
-        tamano: "2.4 MB"
-    },
-    {
-        id: 2,
-        titulo: "Historia del Pueblo Arhuaco",
-        archivo: "historia_arhuacos.pdf",
-        fecha: "01/06/2023",
-        tamano: "3.1 MB"
-    }
-];
+// Función para cerrar modal de edición
+function cerrarModalEditar() {
+    document.getElementById('editarGuiaModal').style.display = 'none';
+}
 
-// Función para cargar las guías
-function cargarGuias() {
-    const contenedor = document.querySelector('.guias-lista');
-    if (!contenedor) return;
+// Función para guardar cambios de la guía (simplificada)
+async function guardarCambiosGuia() {
+    const id = document.getElementById('editarGuiaId').value;
+    const titulo = document.getElementById('editarTitulo').value;
+    const categoria = document.getElementById('editarCategoria').value;
     
-    if (guias.length === 0) {
-        contenedor.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #666;">No hay guías disponibles actualmente.</p>';
+    if (!titulo.trim()) {
+        mostrarModal('Error', 'El título es requerido', 'error');
         return;
     }
     
-    contenedor.innerHTML = guias.map(guia => `
-        <div class="guia-item">
-            <div class="guia-icono">📄</div>
-            <div class="guia-info">
-                <h5>${guia.titulo}</h5>
-                <p>${guia.tamano} • ${guia.fecha}</p>
-                <a href="#" class="descargar-btn" data-archivo="${guia.archivo}">
-                    Descargar
-                </a>
-            </div>
-        </div>
-    `).join('');
-    
-    // Agregar manejadores de eventos para los botones de descarga
-    document.querySelectorAll('.descargar-btn').forEach(boton => {
-        boton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const archivo = this.getAttribute('data-archivo');
-            alert(`Iniciando descarga de: ${archivo}\n\n(En un entorno real, esto descargaría el archivo del servidor)`);
-            // Aquí iría la lógica para descargar el archivo
-        });
+    const data = await fetchData(`/api/editar-guia/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            titulo: titulo,
+            categoria: categoria
+        })
     });
+    
+    if (data.success) {
+        mostrarModal('Éxito', 'Guía actualizada correctamente', 'success');
+        cerrarModalEditar();
+        cargarGuias(); // Recargar la lista
+    } else {
+        mostrarModal('Error', data.mensaje || 'Error al actualizar la guía', 'error');
+    }
 }
 
-// Mostrar/ocultar guías
-document.getElementById('btn-guias')?.addEventListener('click', function() {
-    const contenedor = document.getElementById('contenedor-guias');
-    const boton = document.getElementById('btn-guias');
+// Función para mostrar modal de confirmación de eliminación (simplificada)
+function eliminarGuia(id, titulo) {
+    guiaAEliminar = id;
+    document.getElementById('nombreGuiaEliminar').textContent = titulo;
     
-    if (contenedor.style.display === 'none') {
-        contenedor.style.display = 'block';
-        boton.textContent = 'Ocultar guías';
-        cargarGuias();
-    } else {
-        contenedor.style.display = 'none';
-        boton.textContent = 'Ver guías';
-    }
-});
+    // Mostrar modal personalizado
+    document.getElementById('confirmarEliminarModal').style.display = 'block';
+}
 
-// Manejar el envío del formulario
-document.getElementById('form-subir-guia')?.addEventListener('submit', function(e) {
-    e.preventDefault();
+// Función para cerrar modal de eliminación
+function cerrarModalEliminar() {
+    document.getElementById('confirmarEliminarModal').style.display = 'none';
+    guiaAEliminar = null;
+}
+
+// Función para confirmar la eliminación (simplificada)
+async function confirmarEliminacion() {
+    if (!guiaAEliminar) return;
     
-    const titulo = document.getElementById('titulo-guia').value;
-    const archivoInput = document.getElementById('archivo-guia');
-    const archivo = archivoInput.files[0];
+    const data = await fetchData(`/api/eliminar-guia/${guiaAEliminar}`, {
+        method: 'DELETE'
+    });
     
-    if (!archivo) {
-        alert('Por favor selecciona un archivo PDF');
-        return;
+    if (data.success) {
+        mostrarModal('Éxito', 'Guía eliminada correctamente', 'success');
+        cerrarModalEliminar();
+        cargarGuias(); // Recargar la lista
+    } else {
+        mostrarModal('Error', data.mensaje || 'Error al eliminar la guía', 'error');
     }
+}
+
+// Función para descargar guía
+function descargarGuia(id) {
+    window.open(`/api/descargar-guia/${id}`, '_blank');
+}
+
+// Función para mostrar alertas
+function mostrarAlerta(mensaje, tipo) {
+    const alertContainer = document.getElementById('alert-container') || document.body;
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    alertContainer.appendChild(alert);
     
-    // Aquí iría la lógica para subir el archivo al servidor
-    // Por ahora, simulamos que se subió correctamente
-    const nuevaGuia = {
-        id: Date.now(),
-        titulo: titulo,
-        archivo: archivo.name,
-        fecha: new Date().toLocaleDateString(),
-        tamano: (archivo.size / (1024 * 1024)).toFixed(1) + ' MB'
-    };
-    
-    guias.unshift(nuevaGuia);
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+// Cargar contenido al cargar la página (simplificado)
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar guías automáticamente al inicio
     cargarGuias();
     
-    // Limpiar el formulario
-    this.reset();
-    
-    alert(`¡La guía "${titulo}" se ha subido correctamente!`);
+    // Formulario de subida de guías
+    const formSubirGuia = document.getElementById('form-subir-guia');
+    if (formSubirGuia) {
+        formSubirGuia.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            const botonSubmit = this.querySelector('button[type="submit"]');
+            const textoOriginal = botonSubmit.textContent;
+            botonSubmit.textContent = 'Subiendo...';
+            botonSubmit.disabled = true;
+            
+            try {
+                const response = await fetch('/api/subir-guia', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarModal('Éxito', 'Guía subida correctamente', 'success');
+                    this.reset();
+                    cargarGuias(); // Recargar la lista de guías
+                } else {
+                    mostrarModal('Error', data.mensaje || 'Error al subir la guía', 'error');
+                }
+            } catch (error) {
+                mostrarModal('Error', 'Error de conexión', 'error');
+            }
+            
+            botonSubmit.textContent = textoOriginal;
+            botonSubmit.disabled = false;
+        });
+    }
+
+    // Cerrar modals al hacer clic fuera de ellos
+    window.addEventListener('click', function(e) {
+        const modalMensaje = document.getElementById('modal-mensaje');
+        const modalEditar = document.getElementById('editarGuiaModal');
+        const modalEliminar = document.getElementById('confirmarEliminarModal');
+        
+        if (e.target === modalMensaje) {
+            cerrarModal();
+        }
+        if (e.target === modalEditar) {
+            cerrarModalEditar();
+        }
+        if (e.target === modalEliminar) {
+            cerrarModalEliminar();
+        }
+    });
 });
 </script>
 {% endblock %}

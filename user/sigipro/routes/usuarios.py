@@ -55,9 +55,6 @@ def editar_perfil():
     if form.validate_on_submit():
         nombre_completo = form.nombre_completo.data
         email = form.email.data
-        telefono = form.telefono.data
-        direccion = form.direccion.data
-        biografia = form.biografia.data
         foto_perfil = form.foto_perfil.data
         
         try:
@@ -79,9 +76,9 @@ def editar_perfil():
             
             cur.execute("""
                 UPDATE usuario 
-                SET nombre = %s, correo = %s, telefono = %s, direccion = %s, biografia = %s, imagen = %s
+                SET nombre = %s, correo = %s, imagen = %s
                 WHERE id = %s
-            """, (nombre_completo, email, telefono, direccion, biografia, foto_filename, session['user_id']))
+            """, (nombre_completo, email, foto_filename, session['user_id']))
             
             conn.commit()
             cur.close()

@@ -73,7 +73,7 @@
                         <i class="fas fa-graduation-cap me-1"></i> Módulo Educativo
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="educationDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('institucional.modulo') }}"><i
+                        <li><a class="dropdown-item" href="{{ url_for('modulo.modulo_educativo') }}"><i
                                     class="fas fa-book me-2"></i>aprendizaje</a></li>
                     </ul>
                 </li>
@@ -110,9 +110,7 @@
                         <span class="d-none d-lg-inline">{{ session['usuario'] }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('usuarios.editar_perfil') }}"><i class="fas fa-user-circle me-2"></i>Mi Perfil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i>Guardados</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('usuarios.perfil') }}"><i class="fas fa-user-circle me-2"></i>Mi Perfil</a></li>
                         {% if session['user_admin'] %}
                         <li>
                             <hr class="dropdown-divider">

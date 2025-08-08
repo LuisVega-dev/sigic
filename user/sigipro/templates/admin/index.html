@@ -16,7 +16,6 @@
     <table class="table table-striped" style="text-align: center;">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Imagen</th>
@@ -26,7 +25,6 @@
         <tbody>
             {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ usuario['id'] }}</td>
                     <td>{{ usuario['nombre'] }}</td>
                     <td>{{ usuario['correo'] }}</td>
                     <td>

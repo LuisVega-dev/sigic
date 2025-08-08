@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-07-2025 a las 08:39:31
+-- Tiempo de generación: 09-08-2025 a las 00:37:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -66,7 +66,7 @@ CREATE TABLE `permisos` (
 
 CREATE TABLE `textual` (
   `id_contenido` int(11) NOT NULL,
-  `texto` varchar(255) NOT NULL
+  `texto` mediumblob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -89,9 +89,11 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `nombre`, `correo`, `contraseña`, `imagen`, `admin`) VALUES
-(7, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'scrypt:32768:8:1$dqiO8au5GTm5v4RC$98690c7eedda5c5bd7118f48a5502c48e76267b2acfce89b84c7335f771c9704e776dd69bc9910b086ad30d328890260c9fde4f6f18551f34602cfc8e19d79dc', 'IMG_20250610_010413.jpg', 1),
-(9, 'Andres Torres', 'andrestorres@gmail.com', 'scrypt:32768:8:1$QTfehHKWxxlJVB6l$d79e20d2357745a2aabf0777150d081344351b5c772ecceef822903ccffe4c8a1161f5247f891cdc341fd4fdc99d06861826d59ae3611b532e5cc3d152ea5991', NULL, 1),
-(13, 'Karina Meza', 'karinameza@gmail.com', 'scrypt:32768:8:1$LgsMyxATnIH3bxzw$c89725f8c4c1ff75e634aacd610382f707a093f46b52e4c7ad5a0056f3b245b9adf609785c20f09dd8e8a185b86cc5d0d74e6d56acf4616cc4108d8e185c8723', NULL, 0);
+(7, 'Luis Vega', 'luismanuelvegaramirez3@gmail.com', 'scrypt:32768:8:1$7Y68jZWEfpMSTVdL$2822b2c78ab0cf5f0cc36a2d0cced9e14a33fbd8d62107687c712d2b1dae5e15be6afbcdae78e22da0a60dd3eff078e07d9f6a2278417495d23e8e38d37661da', 'IMG_20250610_010413.jpg', 1),
+(9, 'Andres Torres', 'andrestorres@gmail.com', 'scrypt:32768:8:1$QTfehHKWxxlJVB6l$d79e20d2357745a2aabf0777150d081344351b5c772ecceef822903ccffe4c8a1161f5247f891cdc341fd4fdc99d06861826d59ae3611b532e5cc3d152ea5991', NULL, 0),
+(13, 'makutorres', 'karinameza@gmail.com', 'scrypt:32768:8:1$LgsMyxATnIH3bxzw$c89725f8c4c1ff75e634aacd610382f707a093f46b52e4c7ad5a0056f3b245b9adf609785c20f09dd8e8a185b86cc5d0d74e6d56acf4616cc4108d8e185c8723', NULL, 0),
+(14, 'dwinarin villafañe', 'villafaneoctavio8@gmail.com', 'scrypt:32768:8:1$6DwOziGwpsRbThkt$ddc7ce30273e9126957cffa2d3535141d542e5298e6b5071f937709129f9cb3d2b6639c61919a0a3701e270f5c29483d5b420ce8671742d8fa2ff70e0ebaa8bf', NULL, 0),
+(15, 'Luis Vega', 'pochoagario@gmail.com', 'scrypt:32768:8:1$8JkNrLu53Q8CON1S$e2dbb5ebbd121b8983b4438e225580e07af17e21ecfa5ce26b03d996bb7cb080df53fb278b242c4b4fd416a3c9b07ba0e0fdce6d3d681bc1c303b3938068a72a', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -165,7 +167,7 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Restricciones para tablas volcadas

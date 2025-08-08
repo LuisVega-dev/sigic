@@ -57,11 +57,7 @@ def mision_espiritual():
     """Página sobre la misión espiritual y valores."""
     return render_template('institucional/mision_espiritual.html')
 
-@institucional_bp.route('/modulo')
-@login_required
-def modulo():
-    """Página del módulo educativo o de capacitación."""
-    return render_template('institucional/modulo.html')
+
 
 @institucional_bp.route('/historia')
 @login_required

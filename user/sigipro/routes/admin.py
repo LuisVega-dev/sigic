@@ -537,6 +537,15 @@ def edit_profile(token):
         flash(f"Error al editar perfil: {e}", 'error')
         return redirect(url_for('admin.index'))
 
+# ============================================================================
+# MODULO EDUCATIVO
+# ============================================================================
+
+# Rutas para la gestión de módulos educativos
+@admin_bp.route('/modulo_guias')
+@login_required
+def modulo_guias():
+    return render_template('admin/modulo_guias.html')
 
 # ============================================================================
 # PROCESADORES DE CONTEXTO Y CONFIGURACIÓN FINAL

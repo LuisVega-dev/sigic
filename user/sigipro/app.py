@@ -14,6 +14,7 @@ from routes.proyectos import proyectos_bp
 from routes.noticias import noticias_bp
 from routes.usuarios import usuarios_bp
 from routes.admin import admin_bp
+from routes.modulo import modulo_bp
 
 def create_app():
     """Factory function para crear la aplicación Flask"""
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(noticias_bp)
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(modulo_bp)
     
     return app
 

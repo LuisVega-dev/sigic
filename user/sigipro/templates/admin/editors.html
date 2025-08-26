@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div style="width: 100%;">
+        <h1 class="text-center title-user">Lista de Administradores</h1>
+        <a href="{{ url_for('add_editor') }}" class="btn btn-dark mb-3">Agregar Administrador</a>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>ID de usuario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for editor in editors %}
+                <tr>
+                    <td>{{ editor['id'] }}</td>
+                    <td>{{ editor['nombre'] }}</td>
+                    <td>{{ editor['correo'] }}</td>
+                    <td>{{ editor['id_usuario'] }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_editor', id=editor['id']) }}" class="btn btn-primary btn-sm">Editar</a>
+                        <form action="{{ url_for('delete_editor', id=editor['id']) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

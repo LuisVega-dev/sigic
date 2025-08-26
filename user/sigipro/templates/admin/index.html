@@ -1,0 +1,75 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div style="width: 100%;">
+        <h1 class="text-center title-user">Lista de Usuarios</h1>
+        <a href="{{ url_for('admin.add_user') }}" class="btn btn-dark mb-3">Agregar Aprendiz</a>
+    </div>
+    <table class="table table-striped" style="text-align: center;">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Imagen</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario['nombre'] }}</td>
+                    <td>{{ usuario['correo'] }}</td>
+                    <td>
+                        {% if usuario['imagen'] %}
+                            <img src="{{ url_for('static', filename='uploads_image/' ~ usuario['imagen']) }}" width="100px">
+                        {% else %}
+                            Sin imagen
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; justify-content: center; gap: 5px;">
+                            <a href="{{ url_for('admin.edit_user', token=usuario['id']|encrypt_id) }}" class="btn btn-primary btn-sm">Editar</a>
+                            <form action="{{ url_for('admin.delete_user', token=usuario['id']|encrypt_id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                            {% if usuario['admin'] %}
+                                <form action="{{ url_for('admin.remove_admin', token=usuario['id']|encrypt_id) }}" method="post">
+                                    <button type="submit" class="btn btn-warning btn-sm">Remover Administrador</button>
+                                </form>
+                            {% else %}
+                                <form action="{{ url_for('admin.add_admin', token=usuario['id']|encrypt_id) }}" method="post">
+                                    <button type="submit" class="btn btn-dark btn-sm">Promover a Administrador</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500);
+                }, 3500);
+            }
+        });
+    </script>
+    {% endblock %}
+{% endblock %}

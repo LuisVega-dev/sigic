@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - SIGI{% endblock %}
+
+{% block content %}
+<!-- imagen de seccion -->
+<section class="hero-section position-relative">
+    <div class="hero-image" style="background-image: url('/static/images/pais.jpg');">
+        <div class="overlay"></div>
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-lg-8 text-white">
+                    <h1 class="display-4 fw-bold mb-4">Bienvenido al Sistema de Informacion Geografica Intercultural
+                    </h1>
+                    <p class="lead mb-4">Promoviendo el desarrollo y la preservación de las comunidades indígenas a
+                        través de la tecnología y la innovación.</p>
+                    <a href="{{ url_for('main.contacto') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-handshake me-2"></i>Únete a Nosotros
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Sección de Proyectos Destacados -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Proyectos Destacados</h2>
+        <div class="row g-4">
+            {% for proyecto in proyectos_destacados %}
+            <div class="col-md-4">
+                <div class="card h-100">
+                    {% if proyecto.imagen %}
+                    <img src="{{ proyecto.imagen }}" class="card-img-top" alt="{{ proyecto.titulo }}"
+                        style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ proyecto.titulo }}</h4>
+                        <p class="text-muted">
+                            <span class="badge bg-{{ proyecto.estado_color }}">{{ proyecto.estado|title }}</span>
+                        </p>
+                        <p class="card-text">{{ proyecto.descripcion[:150] }}{% if proyecto.descripcion|length > 150
+                            %}...{% endif %}</p>
+                        <a href="{{ url_for('proyectos.ver_proyecto', id=proyecto.id) }}" class="btn btn-outline-primary">Ver
+                            Detalles</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('proyectos.proyectos') }}" class="btn btn-primary">
+                Ver Todos los Proyectos
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Noticias Recientes -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Últimas Noticias</h2>
+        <div class="row g-4">
+            {% for noticia in noticias_recientes %}
+            <div class="col-md-4">
+                <div class="card h-100">
+                    {% if noticia.imagen %}
+                    <img src="{{ noticia.imagen }}" class="card-img-top" alt="{{ noticia.titulo }}"
+                        style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ noticia.titulo }}</h4>
+                        <p class="text-muted">
+                            <small>
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ noticia.fecha_publicacion.strftime('%d/%m/%Y') }}
+                            </small>
+                        </p>
+                        <p class="card-text">{{ noticia.contenido[:150] }}{% if noticia.contenido|length > 150 %}...{%
+                            endif %}</p>
+                        <a href="{{ url_for('noticias.ver_noticia', id=noticia.id) }}" class="btn btn-outline-primary">Leer
+                            Más</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('noticias.noticias') }}" class="btn btn-primary">
+                Ver Todas las Noticias
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Testimonios -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Lo que Dicen Nuestras Comunidades</h2>
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div id="testimoniosCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for testimonio in testimonios %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    {% if testimonio.foto %}
+                                    <img src="{{ testimonio.foto }}" class="rounded-circle mb-3"
+                                        alt="{{ testimonio.nombre }}"
+                                        style="width: 100px; height: 100px; object-fit: cover;">
+                                    {% else %}
+                                    <i class="fas fa-user-circle fa-4x mb-3 text-primary"></i>
+                                    {% endif %}
+                                    <p class="card-text mb-3">{{ testimonio.mensaje }}</p>
+                                    <h5 class="card-title">{{ testimonio.nombre }}</h5>
+                                    <p class="text-muted">{{ testimonio.comunidad }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#testimoniosCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#testimoniosCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de CTA -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h2 class="mb-4">¿Quieres ser parte de nuestro proyecto?</h2>
+                <p class="lead mb-4">Únete a nosotros en nuestra misión de promover el desarrollo y la preservación de
+                    las comunidades indígenas.</p>
+                <a href="{{ url_for('main.contacto') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-handshake me-2"></i>Contáctanos
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .hero-section {
+        height: 600px;
+        overflow: hidden;
+    }
+
+    .hero-image {
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .counter {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+        opacity: 0.8;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        padding: 1rem;
+    }
+</style>
+{% endblock %}
